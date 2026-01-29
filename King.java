@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
-public class Queen extends Piece{
+public class King extends Piece{
     String image;
 
-    public Queen(String color) {
+    public King(String color) {
         super(color);
         if(color.equals("white")) {
             image = "white piece";
