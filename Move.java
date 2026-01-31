@@ -8,4 +8,8 @@ public class Move {
         this.start = start;
         this.end = end;
     }
+
+    public String toString() {
+        return end.row + " " + end.col;
+    }
 }

@@ -11,5 +11,5 @@ public abstract class Piece {
         return color;
     }
 
-    public abstract ArrayList<Move> getPseudoLegalMoves(Board board);
+    public abstract ArrayList<Move> getPseudoLegalMoves(Board board, Position from);
 }

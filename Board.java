@@ -32,4 +32,12 @@ public class Board {
         }
 
     }
+
+    public Piece pieceThere(int row, int col) {
+        Piece piece = pieces[row][col];
+        if(piece == null) {
+            return null;
+        }
+        return piece;
+    }
 }
