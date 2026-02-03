@@ -1,16 +1,11 @@
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
-    public String image;
+    public String type;
 
     public Pawn(String color) {
         super(color);
-        if(color.equals("white")) {
-            image = "white piece";
-        }
-        else {
-            image = "black piece";
-        }
+        this.type = "pawn";
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {

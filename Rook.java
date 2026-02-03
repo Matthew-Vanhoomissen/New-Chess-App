@@ -1,16 +1,11 @@
 import java.util.ArrayList;
 
 public class Rook extends Piece{
-    String image;
+    String type;
 
     public Rook(String color) {
         super(color);
-        if(color.equals("white")) {
-            image = "white piece";
-        }
-        else {
-            image = "black piece";
-        }
+        this.type = "rook";
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {

@@ -1,16 +1,11 @@
 import java.util.ArrayList;
 
 public class King extends Piece{
-    String image;
+    String type;
 
     public King(String color) {
         super(color);
-        if(color.equals("white")) {
-            image = "white piece";
-        }
-        else {
-            image = "black piece";
-        }
+        this.type = "king";
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {
