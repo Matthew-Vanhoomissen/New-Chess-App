@@ -4,8 +4,7 @@ public class Rook extends Piece{
     String type;
 
     public Rook(String color) {
-        super(color);
-        this.type = "rook";
+        super(color, "rook");
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {

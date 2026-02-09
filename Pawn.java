@@ -4,8 +4,7 @@ public class Pawn extends Piece{
     public String type;
 
     public Pawn(String color) {
-        super(color);
-        this.type = "pawn";
+        super(color, "pawn");
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {

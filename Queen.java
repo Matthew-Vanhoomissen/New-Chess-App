@@ -4,8 +4,7 @@ public class Queen extends Piece{
     String type;
 
     public Queen(String color) {
-        super(color);
-        this.type = "queen";
+        super(color, "queen");
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {

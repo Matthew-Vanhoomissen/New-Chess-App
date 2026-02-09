@@ -5,28 +5,17 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        /* 
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Chess Board");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Board board = new Board();
+        board.createBoard();
 
-            Game gamePanel = new Game();
-            frame.add(gamePanel);
+        JFrame frame = new JFrame("Chess");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-        */
-       Board board = new Board();
-       board.createBoard();
-       Piece piece = board.pieceThere(0, 4);
-       if(piece instanceof King) {
-        System.out.println("Hello");
-       }
-       ArrayList<Move> moves = piece.getPseudoLegalMoves(board, new Position(0, 4));
-       for(Move m : moves) {
-        System.out.println(m);
-       }
+        ChessPanel panel = new ChessPanel(board);
+        frame.add(panel);
+
+        frame.pack();
+        frame.setResizable(false);
+        frame.setVisible(true);
     }
 }

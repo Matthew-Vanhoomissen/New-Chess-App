@@ -4,8 +4,7 @@ public class Bishop extends Piece{
     String type;
 
     public Bishop(String color) {
-        super(color);
-        this.type = "bishop";
+        super(color, "bishop");
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {
