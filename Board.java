@@ -29,11 +29,14 @@ public class Board {
         for(int i = 0; i < 8; i++) {
             pieces[1][i] = new Pawn(b);
             pieces[6][i] = new Pawn(w);
-        }
+        } 
 
     }
 
     public Piece pieceThere(int row, int col) {
+        if(row > 7 || row < 0 || col > 7 || col < 0) {
+            return null;
+        }
         Piece piece = pieces[row][col];
         if(piece == null) {
             return null;

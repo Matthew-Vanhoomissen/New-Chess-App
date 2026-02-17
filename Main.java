@@ -12,6 +12,9 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         ChessPanel panel = new ChessPanel(board);
+        GameManager manager = new GameManager(board, panel);
+        panel.setManager(manager);
+        
         frame.add(panel);
 
         frame.pack();
