@@ -36,7 +36,7 @@ public class Board {
         pieces[7][6] = new Knight(w);
         pieces[7][7] = new Rook(w);
 
-        blackKing = new Position(7, 4);
+        whiteKing = new Position(7, 4);
 
 
         for(int i = 0; i < 8; i++) {
@@ -61,9 +61,16 @@ public class Board {
         Piece selectedPiece = pieceThere(pos.row, pos.col);
         ArrayList<Move> legalMoves = selectedPiece.getPseudoLegalMoves(this, pos);
         for(int i = legalMoves.size() - 1; i >= 0; i--) {
-            makeMove(legalMoves.get(i));
-
+            Move move = legalMoves.get(i);
+            makeMove(move);
+            boolean inCheck = isKingInCheck(selectedPiece.color);
+            undoMove(move); 
+            if (inCheck) {
+                System.out.println("You are in check! " );
+                legalMoves.remove(i);
+            }
         }
+        return legalMoves;
     }
 
 
@@ -87,12 +94,90 @@ public class Board {
                 continue;
             }
 
-            Piece enemy = pieceThere(kingRow, kingCol);
-            if(!enemy.color.equals(color) && enemy instanceof Knight) { return true; }
+            Piece enemy = pieceThere(newRow, newCol);
+            if(enemy != null && !enemy.color.equals(color) && enemy instanceof Knight) { return true; }
 
         }
-        
+        //Pawns
+        int rowOffset = (color.equals("white") ? -1 : 1);
+        int pawnRow = kingRow + 1 * rowOffset;
+        int pawnCol1 = kingCol - 1; 
+        int pawnCol2 = kingCol + 1;
+        if(pawnRow >= 0 && pawnRow < 8) {
+            Piece enemy;
+            if(pawnCol1 >= 0 && pawnCol1 < 8) {
+                enemy = pieceThere(pawnRow, pawnCol1);
+                if(enemy != null && !enemy.color.equals(color) && enemy instanceof Pawn) { 
+                    return true; }
+            }
+            if(pawnCol2 >= 0 && pawnCol2 < 8) {
+                enemy = pieceThere(pawnRow, pawnCol2);
+                if(enemy != null && !enemy.color.equals(color) && enemy instanceof Pawn) { 
+                    return true; }
+            }
+        }
 
+        //Bishop/Queen
+        int[][] offsetsBishop = {
+            {-1, -1}, {-1, 1},
+            {1, -1}, {1, 1}
+        };
+        for(int[] coor : offsetsBishop) {
+            int r = coor[0] + kingRow;
+            int c = coor[1] + kingCol;
+            while(r >= 0 && r < 8 && c >= 0 && c < 8) {
+                Piece enemy = pieceThere(r, c);
+                if(enemy != null) {
+                    if(!enemy.color.equals(color) && (enemy instanceof Bishop || enemy instanceof Queen)) {
+                        return true; 
+                    }
+                    break;
+                }
+                r += 1 * coor[0];
+                c += 1 * coor[1];
+            }
+        }
+
+        //Rook/Queen
+        int[][] offsetsRook = {
+            {-1, 0}, {1, 0},
+            {0, -1}, {0, 1}
+        };
+        for(int[] coor : offsetsRook) {
+            int r = coor[0] + kingRow;
+            int c = coor[1] + kingCol;
+            while(r >= 0 && r < 8 && c >= 0 && c < 8) {
+                Piece enemy = pieceThere(r, c);
+                if(enemy != null) {
+                    if(!enemy.color.equals(color) && (enemy instanceof Rook || enemy instanceof Queen)) {
+                        return true; 
+                    }
+                    break;
+                }
+                r += 1 * coor[0];
+                c += 1 * coor[1];
+            }
+        }
+
+        //King
+        int[][] offsetsKing = {
+            {-1, -1}, {-1, 0}, {-1, 1},
+            {1, -1}, {1, 0}, {1, 1},
+            {0, -1}, {0, 1}
+        };
+        for(int[] coor : offsetsKing) {
+            int r = coor[0] + kingRow;
+            int c = coor[1] + kingCol;
+            if (r < 0 || r >= 8 || c < 0 || c >= 8) {
+                continue;
+            }
+            Piece enemy = pieceThere(r, c);
+            if(enemy != null && !enemy.color.equals(color) && enemy instanceof King) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     public Position findKing(String color) {
@@ -130,20 +215,16 @@ public class Board {
     public void undoMove(Move move) {
         Piece movedPiece = move.piece;
 
+        pieces[move.start.row][move.start.col] = move.piece;
+        pieces[move.end.row][move.end.col] = move.capturedPiece;
+
         if(movedPiece instanceof King) {
             Position king = (movedPiece.color.equals("white") ? whiteKing : blackKing);
             king.row = move.start.row;
             king.col = move.start.col;
         }
 
-        pieces[move.start.row][move.start.col] = move.piece;
-        pieces[move.end.row][move.end.row] = move.capturedPiece;
-
-        if(movedPiece instanceof King) {
-            Position king = (movedPiece.color.equals("white") ? whiteKing : blackKing);
-            king.row = move.end.row;
-            king.col = move.end.col;
-        }
+        
 
         move.piece.setMoved(move.firstMove);
     }
