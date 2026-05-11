@@ -1,3 +1,9 @@
+/**
+ * @author: Matthew-Vanhoomissen
+ * Class that generates GUI
+ * Draws the board, pieces, and possible moves
+ */
+
 import javax.swing.JPanel;
 
 import java.awt.event.MouseAdapter;
@@ -17,6 +23,11 @@ public class ChessPanel extends JPanel {
     private static final int TILE_SIZE = 64;
     
 
+    /**
+     * 
+     * @param board
+     * Initializes visual board and checks for user input
+     */
     public ChessPanel(Board board) {
         this.board = board;
         setPreferredSize(new Dimension(8 * TILE_SIZE, 8 * TILE_SIZE));
