@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Board {
     public Piece[][] pieces;
 
@@ -43,4 +45,29 @@ public class Board {
         }
         return piece;
     }
+
+    public ArrayList<Move> getLegalMoves(Position pos) {
+        return pieceThere(pos.row, pos.col).getPseudoLegalMoves(this, pos);
+    }
+
+    public void makeMove(Move move) {
+        Piece movedPiece = move.piece;
+
+        move.capturedPiece = pieces[move.end.row][move.end.col];
+
+        pieces[move.start.row][move.start.col] = null;
+
+        pieces[move.end.row][move.end.col] = movedPiece;
+
+        move.firstMove = movedPiece.hasMoved;
+        movedPiece.setMoved(true);
+    }
+
+    public void undoMove(Move move) {
+        pieces[move.start.row][move.start.col] = move.piece;
+        pieces[move.end.row][move.end.row] = move.capturedPiece;
+
+        move.piece.setMoved(move.firstMove);
+    }
+
 }

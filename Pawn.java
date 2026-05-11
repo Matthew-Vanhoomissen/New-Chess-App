@@ -21,9 +21,9 @@ public class Pawn extends Piece{
         Piece piece2 = board.pieceThere(from.row + 2 * direction, from.col);
         
         if(piece1 == null && from.row + 1 * direction >= 0 && from.row + 1 * direction <= 7) {
-            pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col)));
+            pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col), null));
             if(onStartingRank && piece2 == null) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 2 * direction, from.col)));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + 2 * direction, from.col), null));
             }
             
         }
@@ -32,10 +32,10 @@ public class Pawn extends Piece{
 
         if(piece1 != null || piece2 != null) {
             if(piece1 != null && !piece1.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col - 1)));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col - 1), null));
             }
             if(piece2 != null && !piece2.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col + 1)));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col + 1), null));
             }
 
         }

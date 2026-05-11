@@ -14,11 +14,11 @@ public class Bishop extends Piece{
         while(r >= 0 && c >= 0) {
             Piece piece = board.pieceThere(r, c);
             if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
             }
             else {
                 if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
                 }
                 break;
             }
@@ -29,11 +29,11 @@ public class Bishop extends Piece{
         while(r >= 0 && c <= 7) {
             Piece piece = board.pieceThere(r, c);
             if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
             }
             else {
                 if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
                 }
                 break;
             }
@@ -44,11 +44,11 @@ public class Bishop extends Piece{
         while(r <= 7 && c <= 7) {
             Piece piece = board.pieceThere(r, c);
             if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
             }
             else {
                 if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
                 }
                 break;
             }
@@ -59,11 +59,11 @@ public class Bishop extends Piece{
         while(r <= 7 && c >= 0) {
             Piece piece = board.pieceThere(r, c);
             if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
             }
             else {
                 if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
                 }
                 break;
             }

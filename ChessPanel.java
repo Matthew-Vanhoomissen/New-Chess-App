@@ -39,6 +39,10 @@ public class ChessPanel extends JPanel {
         this.highlightedMoves = moves;
         repaint();
     }
+    public void clearHighlightedMoves() {
+        this.highlightedMoves.clear();
+        repaint();
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -86,7 +90,7 @@ public class ChessPanel extends JPanel {
         for(Move m : highlightedMoves) {
             int row = m.end.row;
             int col = m.end.col;
-            g.setColor(new Color(0, 255, 0, 120));
+            g.setColor(Color.GREEN);
             g.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
     }

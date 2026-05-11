@@ -27,10 +27,10 @@ public class Knight extends Piece{
             Piece piece = board.pieceThere(newRow, newCol);
 
             if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol)));
+                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol), null));
             }
             else if (!piece.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol)));
+                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol), null));
             }
         }
         return pseudoMoves;

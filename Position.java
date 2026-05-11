@@ -6,4 +6,15 @@ public class Position {
         this.row = row;
         this.col = col;
     }
+
+    public String toString() {
+        return "[" + row + "][" + col + "]";
+    }
+
+    public boolean equals(Position other) {
+        if(row == other.row && col == other.col) {
+            return true;
+        }
+        return false;
+    }
 }

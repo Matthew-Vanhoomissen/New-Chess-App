@@ -22,11 +22,11 @@ public class King extends Piece{
             Piece piece = board.pieceThere(from.row + coord[0], from.col + coord[1]);
             if(piece != null) {
                 if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(from.row + coord[0], from.col + coord[1])));
+                    pseudoMoves.add(new Move(this, from, new Position(from.row + coord[0], from.col + coord[1]), null));
                 }
             }
             else {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + coord[0], from.col + coord[1])));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + coord[0], from.col + coord[1]), null));
             }
         }
         return pseudoMoves;

@@ -13,10 +13,10 @@ public class Rook extends Piece{
             Piece piece = board.pieceThere(r, from.col);
 
             if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, from.col)));
+                pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
             } else {
                 if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, from.col)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
                 }
                 break;
             }
@@ -25,10 +25,10 @@ public class Rook extends Piece{
             Piece piece = board.pieceThere(r, from.col);
 
             if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, from.col)));
+                pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
             } else {
                 if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, from.col)));
+                    pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
                 }
                 break;
             }
@@ -37,10 +37,10 @@ public class Rook extends Piece{
             Piece piece = board.pieceThere(from.row, c);
 
             if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row, c)));
+                pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
             } else {
                 if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(from.row, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
                 }
                 break;
             }
@@ -49,10 +49,10 @@ public class Rook extends Piece{
             Piece piece = board.pieceThere(from.row, c);
 
             if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row, c)));
+                pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
             } else {
                 if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(from.row, c)));
+                    pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
                 }
                 break;
             }
