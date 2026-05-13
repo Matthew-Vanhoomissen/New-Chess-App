@@ -66,11 +66,32 @@ public class Board {
             boolean inCheck = isKingInCheck(selectedPiece.color);
             undoMove(move); 
             if (inCheck) {
-                System.out.println("You are in check! " );
                 legalMoves.remove(i);
             }
         }
         return legalMoves;
+    }
+
+    public int checkGameState(String color) {
+        if(!hasMovesLeft(color)) {
+            return (isKingInCheck(color) ? 1 : 2);
+        }
+        return 0;        
+    }
+
+    public boolean hasMovesLeft(String color) {
+
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                Piece piece = pieces[i][j];
+                if(piece != null && piece.color.equals(color)) {
+                    if(getLegalMoves(new Position(i, j)).size() > 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -178,18 +199,6 @@ public class Board {
 
         }
         return false;
-    }
-
-    public Position findKing(String color) {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                Piece piece = pieceThere(i, j);
-                if(piece instanceof King && piece.color.equals(color)) {
-                    return new Position(i, j);
-                }
-            }
-        }
-        return null;
     }
 
     public void makeMove(Move move) {
