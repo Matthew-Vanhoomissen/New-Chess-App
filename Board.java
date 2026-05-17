@@ -121,7 +121,7 @@ public class Board {
         }
         //Pawns
         int rowOffset = (color.equals("white") ? -1 : 1);
-        int pawnRow = kingRow + 1 * rowOffset;
+        int pawnRow = kingRow + rowOffset;
         int pawnCol1 = kingCol - 1; 
         int pawnCol2 = kingCol + 1;
         if(pawnRow >= 0 && pawnRow < 8) {
@@ -154,8 +154,8 @@ public class Board {
                     }
                     break;
                 }
-                r += 1 * coor[0];
-                c += 1 * coor[1];
+                r += coor[0];
+                c += coor[1];
             }
         }
 
@@ -175,8 +175,8 @@ public class Board {
                     }
                     break;
                 }
-                r += 1 * coor[0];
-                c += 1 * coor[1];
+                r += coor[0];
+                c += coor[1];
             }
         }
 
@@ -251,6 +251,29 @@ public class Board {
             return prevMoves.peek();
         }
         return null;
+    }
+
+    public boolean castleCheck(String color, Move move) {
+        if(isKingInCheck(color)) { return false; }
+
+        int direction = (move.end.col == 2 ? -1 : 1);
+        int c = move.start.col + direction;
+
+        Move testMove;
+        boolean inCheck;
+        while(c != move.end.col) {
+            testMove = new Move(move.piece, move.start, new Position(move.start.row, c), null);
+            makeMove(testMove);
+            inCheck = isKingInCheck(color);
+            undoMove(testMove);
+            if(inCheck) { return false; }
+            c += direction;
+        }
+        testMove = new Move(move.piece, move.start, new Position(move.start.row, c), null);
+        makeMove(testMove);
+        inCheck = isKingInCheck(color);
+        undoMove(testMove);
+        return (inCheck ? false : true);
     }
 
 }

@@ -18,26 +18,26 @@ public class Pawn extends Piece{
             (color.equals("black") && from.row == 1);
 
         //Moving forward or up 2
-        Piece piece1 = board.pieceThere(from.row + 1 * direction, from.col);
+        Piece piece1 = board.pieceThere(from.row + direction, from.col);
         Piece piece2 = board.pieceThere(from.row + 2 * direction, from.col);
         
-        if(piece1 == null && from.row + 1 * direction >= 0 && from.row + 1 * direction <= 7) {
-            pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col), null));
+        if(piece1 == null && from.row + direction >= 0 && from.row + direction <= 7) {
+            pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col), null));
             if(onStartingRank && piece2 == null) {
                 pseudoMoves.add(new Move(this, from, new Position(from.row + 2 * direction, from.col), null));
             }
             
         }
         //Capturing diagonally
-        piece1 = board.pieceThere(from.row + 1 * direction, from.col - 1);
-        piece2 = board.pieceThere(from.row + 1 * direction, from.col + 1);
+        piece1 = board.pieceThere(from.row + direction, from.col - 1);
+        piece2 = board.pieceThere(from.row + direction, from.col + 1);
 
         if(piece1 != null || piece2 != null) {
             if(piece1 != null && !piece1.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col - 1), piece1));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col - 1), piece1));
             }
             if(piece2 != null && !piece2.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col + 1), piece2));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col + 1), piece2));
             }
 
         }
@@ -49,7 +49,7 @@ public class Pawn extends Piece{
             if(Math.abs(prevMove.end.row - prevMove.start.row) == 2 && prevMove.end.row == from.row) {//On same row
                 if(Math.abs(prevMove.end.col - from.col) == 1) { //Offset column by 1
                     pseudoMoves.add(new Move(this, from, new Position(
-                        from.row + 1 * direction,
+                        from.row + direction,
                         prevMove.end.col),
                         prevMove.piece, prevMove.end));
                 }

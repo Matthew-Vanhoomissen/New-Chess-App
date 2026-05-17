@@ -29,8 +29,8 @@ public class Bishop extends Piece{
                     }
                     break;
                 }
-                r += 1 * coord[0];
-                c += 1 * coord[1];
+                r += coord[0];
+                c += coord[1];
             } 
         }
 
