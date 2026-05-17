@@ -62,12 +62,20 @@ public class Board {
         ArrayList<Move> legalMoves = selectedPiece.getPseudoLegalMoves(this, pos);
         for(int i = legalMoves.size() - 1; i >= 0; i--) {
             Move move = legalMoves.get(i);
-            makeMove(move);
-            boolean inCheck = isKingInCheck(selectedPiece.color);
-            undoMove(move); 
-            if (inCheck) {
-                legalMoves.remove(i);
+            if(move.castleMove) {
+                if(!castleCheck(move.piece.color, move)) {
+                    legalMoves.remove(i);
+                }
             }
+            else {
+                makeMove(move);
+                boolean inCheck = isKingInCheck(selectedPiece.color);
+                undoMove(move); 
+                if (inCheck) {
+                    legalMoves.remove(i);
+                }
+            }
+            
         }
         return legalMoves;
     }
@@ -215,8 +223,14 @@ public class Board {
             king.row = move.end.row;
             king.col = move.end.col;
         }
+
         if(move.enPassantMove) {
             pieces[move.enPassantPosition.row][move.enPassantPosition.col] = null;
+        }
+        else if(move.castleMove) {
+            pieces[move.rookPositionStart.row][move.rookPositionStart.col] = null;
+            pieces[move.rookPositionEnd.row][move.rookPositionEnd.col] = move.castleRook;
+            move.castleRook.setMoved(true);
         }
 
         move.firstMove = movedPiece.hasMoved;
@@ -237,6 +251,11 @@ public class Board {
 
         if(move.enPassantMove) {
             pieces[move.enPassantPosition.row][move.enPassantPosition.col] = move.enPassantPiece;
+        }
+        else if(move.castleMove) {
+            pieces[move.rookPositionStart.row][move.rookPositionStart.col] = move.castleRook;
+            pieces[move.rookPositionEnd.row][move.rookPositionEnd.col] = null;
+            move.castleRook.setMoved(false);
         }
         
         move.piece.setMoved(move.firstMove);

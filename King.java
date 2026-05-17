@@ -29,6 +29,34 @@ public class King extends Piece{
                 pseudoMoves.add(new Move(this, from, new Position(from.row + coord[0], from.col + coord[1]), null));
             }
         }
+
+        //Castling
+
+        if(this.hasMoved == false) {
+            //Short castle
+            int c = from.col + 1;
+            if(board.pieceThere(from.row, c++) == null && board.pieceThere(from.row, c++) == null) {
+                Piece piece = board.pieceThere(from.row, c);
+                if(piece != null && piece instanceof Rook && piece.color.equals(this.color) && !piece.hasMoved) {
+                    pseudoMoves.add(new Move(
+                        this, from, new Position(from.row, from.col + 2), 
+                        piece, new Position(from.row, c), new Position(from.row, c - 2)));
+                }
+            }
+            
+            //Long castle
+            c = from.col - 1;
+            if(board.pieceThere(from.row, c--) == null && board.pieceThere(from.row, c--) == null && board.pieceThere(from.row, c--) == null) {
+                Piece piece = board.pieceThere(from.row, c);
+                if(piece != null && piece instanceof Rook && piece.color.equals(this.color) && !piece.hasMoved) {
+                    pseudoMoves.add(new Move(
+                        this, from, new Position(from.row, from.col - 2), 
+                        piece, new Position(from.row, c), new Position(from.row, c + 3)));
+                }
+            }
+        }
+        
+
         return pseudoMoves;
     }
 }
