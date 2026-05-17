@@ -215,10 +215,12 @@ public class Board {
             king.row = move.end.row;
             king.col = move.end.col;
         }
+        if(move.enPassantMove) {
+            pieces[move.enPassantPosition.row][move.enPassantPosition.col] = null;
+        }
 
         move.firstMove = movedPiece.hasMoved;
         movedPiece.setMoved(true);
-        prevMoves.add(move);
     }
 
     public void undoMove(Move move) {
@@ -233,9 +235,22 @@ public class Board {
             king.col = move.start.col;
         }
 
+        if(move.enPassantMove) {
+            pieces[move.enPassantPosition.row][move.enPassantPosition.col] = move.enPassantPiece;
+        }
         
-
         move.piece.setMoved(move.firstMove);
+    }
+
+    public void addMove(Move move) {
+        prevMoves.add(move);
+    }
+
+    public Move getPreviousMove() {
+        if(!prevMoves.empty()) {
+            return prevMoves.peek();
+        }
+        return null;
     }
 
 }

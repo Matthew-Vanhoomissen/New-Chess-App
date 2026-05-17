@@ -17,6 +17,7 @@ public class Pawn extends Piece{
             (color.equals("white") && from.row == 6) ||
             (color.equals("black") && from.row == 1);
 
+        //Moving forward or up 2
         Piece piece1 = board.pieceThere(from.row + 1 * direction, from.col);
         Piece piece2 = board.pieceThere(from.row + 2 * direction, from.col);
         
@@ -27,17 +28,32 @@ public class Pawn extends Piece{
             }
             
         }
+        //Capturing diagonally
         piece1 = board.pieceThere(from.row + 1 * direction, from.col - 1);
         piece2 = board.pieceThere(from.row + 1 * direction, from.col + 1);
 
         if(piece1 != null || piece2 != null) {
             if(piece1 != null && !piece1.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col - 1), null));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col - 1), piece1));
             }
             if(piece2 != null && !piece2.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col + 1), null));
+                pseudoMoves.add(new Move(this, from, new Position(from.row + 1 * direction, from.col + 1), piece2));
             }
 
+        }
+
+        //En Passant
+        Move prevMove = board.getPreviousMove();
+        System.out.println(prevMove != null ? prevMove.toString() : "");
+        if(prevMove != null && prevMove.piece instanceof Pawn) { //Previous move was from pawn
+            if(Math.abs(prevMove.end.row - prevMove.start.row) == 2 && prevMove.end.row == from.row) {//On same row
+                if(Math.abs(prevMove.end.col - from.col) == 1) { //Offset column by 1
+                    pseudoMoves.add(new Move(this, from, new Position(
+                        from.row + 1 * direction,
+                        prevMove.end.col),
+                        prevMove.piece, prevMove.end));
+                }
+            }
         }
 
         return pseudoMoves;

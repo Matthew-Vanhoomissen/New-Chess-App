@@ -54,8 +54,8 @@ public class GameManager {
 
       if(move != null) {
          board.makeMove(move);
+         board.addMove(move);
          int gameState = board.checkGameState(currentTurn.equals("white") ? "black" : "white");
-         System.out.println(gameState);
          if(gameState != 0) {
             System.out.println(gameState == 1 ? "Checkmate!" : "Stalemate");
             clearSelection();
