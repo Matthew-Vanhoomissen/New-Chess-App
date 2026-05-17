@@ -30,7 +30,7 @@ public class Knight extends Piece{
                 pseudoMoves.add(new Move(this, from, new Position(newRow, newCol), null));
             }
             else if (!piece.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol), null));
+                pseudoMoves.add(new Move(this, from, new Position(newRow, newCol), piece));
             }
         }
         return pseudoMoves;

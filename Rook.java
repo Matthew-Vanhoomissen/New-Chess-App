@@ -9,53 +9,29 @@ public class Rook extends Piece{
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {
         ArrayList<Move> pseudoMoves = new ArrayList<>();
-        for (int r = from.row - 1; r >= 0; r--) {
-            Piece piece = board.pieceThere(r, from.col);
 
-            if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
-            } else {
-                if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
-                }
-                break;
-            }
-        }
-        for (int r = from.row + 1; r <= 7; r++) {
-            Piece piece = board.pieceThere(r, from.col);
+        int[][] directions = {
+            {-1, 0}, {1, 0},
+            {0, -1}, {0, 1}
+        };
 
-            if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
-            } else {
-                if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, from.col), null));
-                }
-                break;
-            }
-        }
-        for (int c = from.col - 1; c >= 0; c--) {
-            Piece piece = board.pieceThere(from.row, c);
+        for(int[] coord : directions) {
+            int r = from.row + coord[0];
+            int c = from.col + coord[1];
 
-            if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
-            } else {
-                if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
+            while(r < 8 && r >= 0 && c < 8 && c >= 0) {
+                Piece piece = board.pieceThere(r, c);
+                if (piece == null) {
+                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
+                } else {
+                    if (!piece.color.equals(this.color)) {
+                        pseudoMoves.add(new Move(this, from, new Position(r, c), piece));
+                    }
+                    break;
                 }
-                break;
-            }
-        }
-        for (int c = from.col + 1; c <= 7; c++) {
-            Piece piece = board.pieceThere(from.row, c);
-
-            if (piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
-            } else {
-                if (!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(from.row, c), null));
-                }
-                break;
-            }
+                r += 1 * coord[0];
+                c += 1 * coord[1];
+            } 
         }
         return pseudoMoves;
     }

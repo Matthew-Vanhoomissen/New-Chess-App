@@ -9,67 +9,31 @@ public class Bishop extends Piece{
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {
         ArrayList<Move> pseudoMoves = new ArrayList<>();
-        int r = from.row - 1;
-        int c = from.col - 1;
-        while(r >= 0 && c >= 0) {
-            Piece piece = board.pieceThere(r, c);
-            if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-            }
-            else {
-                if(!piece.color.equals(this.color)) {
+
+        int[][] directions = {
+            {-1, -1}, {1, -1},
+            {1, 1}, {-1, 1}
+        };
+
+        for(int[] coord : directions) {
+            int r = from.row + coord[0];
+            int c = from.col + coord[1];
+
+            while(r < 8 && r >= 0 && c < 8 && c >= 0) {
+                Piece piece = board.pieceThere(r, c);
+                if (piece == null) {
                     pseudoMoves.add(new Move(this, from, new Position(r, c), null));
+                } else {
+                    if (!piece.color.equals(this.color)) {
+                        pseudoMoves.add(new Move(this, from, new Position(r, c), piece));
+                    }
+                    break;
                 }
-                break;
-            }
-            r--;
-            c--;
+                r += 1 * coord[0];
+                c += 1 * coord[1];
+            } 
         }
-        r = from.row - 1; c = from.col + 1;
-        while(r >= 0 && c <= 7) {
-            Piece piece = board.pieceThere(r, c);
-            if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-            }
-            else {
-                if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-                }
-                break;
-            }
-            r--;
-            c++;
-        }
-        r = from.row + 1; c = from.col + 1;
-        while(r <= 7 && c <= 7) {
-            Piece piece = board.pieceThere(r, c);
-            if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-            }
-            else {
-                if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-                }
-                break;
-            }
-            r++;
-            c++;
-        }
-        r = from.row + 1; c = from.col - 1;
-        while(r <= 7 && c >= 0) {
-            Piece piece = board.pieceThere(r, c);
-            if(piece == null) {
-                pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-            }
-            else {
-                if(!piece.color.equals(this.color)) {
-                    pseudoMoves.add(new Move(this, from, new Position(r, c), null));
-                }
-                break;
-            }
-            r++;
-            c--;
-        }
+
         return pseudoMoves;
     }
 }
