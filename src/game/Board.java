@@ -314,4 +314,24 @@ public class Board {
         return (inCheck ? false : true);
     }
 
+    public boolean kingSideCastle(String color) {
+        Position kingPosition = color.equals("white") ? whiteKing : blackKing; 
+        Piece king = pieceThere(kingPosition.row, kingPosition.col);
+
+        if(king.hasMoved) { return false; }
+        Piece rook = pieceThere(kingPosition.row, 7);
+        if(rook != null && rook instanceof Rook && !rook.hasMoved && rook.color.equals(color)) { return true;}
+        return false;
+    }
+
+    public boolean queenSideCastle(String color) {
+        Position kingPosition = color.equals("white") ? whiteKing : blackKing; 
+        Piece king = pieceThere(kingPosition.row, kingPosition.col);
+
+        if(king.hasMoved) { return false; }
+        Piece rook = pieceThere(kingPosition.row, 0);
+        if(rook != null && rook instanceof Rook && !rook.hasMoved && rook.color.equals(color)) { return true;}
+        return false;
+    }
+
 }
