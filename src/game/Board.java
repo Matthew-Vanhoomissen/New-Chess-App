@@ -8,6 +8,7 @@ import pieces.*;
 public class Board {
     public Piece[][] pieces;
     public Stack<Move> prevMoves;
+    public Move prevMove;
     private Position whiteKing;
     private Position blackKing;
 
@@ -46,7 +47,8 @@ public class Board {
         for(int i = 0; i < 8; i++) {
             pieces[1][i] = new Pawn(b);
             pieces[6][i] = new Pawn(w);
-        } 
+        }
+        prevMove = null;
 
     }
 
@@ -82,6 +84,19 @@ public class Board {
             
         }
         return legalMoves;
+    }
+
+    public ArrayList<Move> getAllTeamMoves(String team) {
+        ArrayList<Move> totalMoves = new ArrayList<>();
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                Piece piece = pieceThere(i, j);
+                if(piece != null && piece.color.equals(team)) {
+                    totalMoves.addAll(getLegalMoves(new Position(i, j)));
+                }
+            }
+        }
+        return totalMoves;
     }
 
     public int checkGameState(String color) {
@@ -214,6 +229,7 @@ public class Board {
     }
 
     public void makeMove(Move move) {
+        move.prevLastMove = this.prevMove;
         Piece movedPiece = move.piece;
 
         move.capturedPiece = pieces[move.end.row][move.end.col];
@@ -239,6 +255,7 @@ public class Board {
 
         move.firstMove = movedPiece.hasMoved;
         movedPiece.setMoved(true);
+        this.prevMove = move;
     }
 
     public void undoMove(Move move) {
@@ -263,6 +280,7 @@ public class Board {
         }
         
         move.piece.setMoved(move.firstMove);
+        this.prevMove = move.prevLastMove;
     }
 
     public void addMove(Move move) {
@@ -270,10 +288,7 @@ public class Board {
     }
 
     public Move getPreviousMove() {
-        if(!prevMoves.empty()) {
-            return prevMoves.peek();
-        }
-        return null;
+        return prevMove;
     }
 
     public boolean castleCheck(String color, Move move) {

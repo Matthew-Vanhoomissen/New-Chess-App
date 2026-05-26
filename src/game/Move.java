@@ -17,6 +17,8 @@ public class Move {
     public boolean firstMove;
     public boolean enPassantMove;
     public boolean castleMove;
+
+    public Move prevLastMove;
     
 
     public Move(Piece piece, Position start, Position end, Piece capturedPiece) {
