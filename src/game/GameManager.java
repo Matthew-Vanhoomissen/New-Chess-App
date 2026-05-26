@@ -1,3 +1,4 @@
+package game;
 /**
  * @author Matthew Vanhoomissen
  * @version 1.0.1
@@ -6,6 +7,9 @@
  * valid move
  */
 import java.util.ArrayList;
+
+import pieces.*;
+import ui.*;
 
 public class GameManager {
    private Board board;

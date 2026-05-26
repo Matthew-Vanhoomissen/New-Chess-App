@@ -1,4 +1,8 @@
+package pieces;
 import java.util.ArrayList;
+
+import game.*;
+
 
 public class Pawn extends Piece{
     public String type;
@@ -44,7 +48,6 @@ public class Pawn extends Piece{
 
         //En Passant
         Move prevMove = board.getPreviousMove();
-        System.out.println(prevMove != null ? prevMove.toString() : "");
         if(prevMove != null && prevMove.piece instanceof Pawn) { //Previous move was from pawn
             if(Math.abs(prevMove.end.row - prevMove.start.row) == 2 && prevMove.end.row == from.row) {//On same row
                 if(Math.abs(prevMove.end.col - from.col) == 1) { //Offset column by 1

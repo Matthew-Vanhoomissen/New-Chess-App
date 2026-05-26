@@ -1,7 +1,13 @@
+package main;
+
+
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import game.*;
+import ui.*;
 
 public class Main {
     public static void main(String[] args) {

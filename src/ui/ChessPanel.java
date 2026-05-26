@@ -1,3 +1,4 @@
+package ui;
 /**
  * @author: Matthew-Vanhoomissen
  * Class that generates GUI
@@ -5,6 +6,9 @@
  */
 
 import javax.swing.JPanel;
+
+import game.*;
+import pieces.*;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

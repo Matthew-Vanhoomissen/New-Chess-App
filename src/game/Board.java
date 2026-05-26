@@ -1,5 +1,9 @@
+package game;
+
 import java.util.ArrayList;
 import java.util.Stack;
+
+import pieces.*;
 
 public class Board {
     public Piece[][] pieces;

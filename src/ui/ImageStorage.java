@@ -1,3 +1,4 @@
+package ui;
 import java.awt.Image;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
@@ -23,7 +24,9 @@ public class ImageStorage {
     }
 
     private static void load(String key) {
-        Image img = new ImageIcon("images/" + key + ".png").getImage();
+        Image img = new ImageIcon(
+            ImageStorage.class.getResource("/images/" + key + ".png")
+        ).getImage();
         images.put(key, img);
     }
 

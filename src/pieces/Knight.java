@@ -1,4 +1,8 @@
+package pieces;
 import java.util.ArrayList;
+
+import game.*;
+
 
 public class Knight extends Piece{
     String type;

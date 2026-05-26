@@ -1,4 +1,8 @@
+package pieces;
 import java.util.ArrayList;
+
+import game.*;
+
 
 public abstract class Piece {
     public String color;

@@ -1,18 +1,22 @@
+package pieces;
 import java.util.ArrayList;
 
-public class Bishop extends Piece{
+import game.*;
+
+
+public class Rook extends Piece{
     String type;
 
-    public Bishop(String color) {
-        super(color, "bishop");
+    public Rook(String color) {
+        super(color, "rook");
     }
 
     public ArrayList<Move> getPseudoLegalMoves(Board board, Position from) {
         ArrayList<Move> pseudoMoves = new ArrayList<>();
 
         int[][] directions = {
-            {-1, -1}, {1, -1},
-            {1, 1}, {-1, 1}
+            {-1, 0}, {1, 0},
+            {0, -1}, {0, 1}
         };
 
         for(int[] coord : directions) {
@@ -33,7 +37,6 @@ public class Bishop extends Piece{
                 c += coord[1];
             } 
         }
-
         return pseudoMoves;
     }
 }

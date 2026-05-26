@@ -1,3 +1,7 @@
+package game;
+
+import pieces.*;
+
 public class Move {
     public Piece piece;
     public Piece capturedPiece;
