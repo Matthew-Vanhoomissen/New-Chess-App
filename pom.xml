@@ -18,5 +18,12 @@
             <artifactId>nd4j-native-platform</artifactId>
             <version>1.0.0-M2.1</version>
         </dependency>
+
+        <!-- Do not care about logging, so ignore warning-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.36</version>
+        </dependency>
     </dependencies>
 </project>

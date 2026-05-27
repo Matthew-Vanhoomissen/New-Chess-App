@@ -1,16 +1,21 @@
 package run;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+
 import game.*;
-import ml.SimulateGame;
-import ml.TrainingDataGen;
-import ml.TrainingDataGen.Sample;
+import ml.*;
 import ui.*;
 
 public class Main {
@@ -33,19 +38,17 @@ public class Main {
     } */
 
     public static void main(String[] args) {
-        List<TrainingDataGen.Sample> test = SimulateGame.generateGames(5000, 200);
-        float sum = 0, min = Float.MAX_VALUE, max = Float.MIN_VALUE;
-        int nearZero = 0;
-
-        for (Sample s : test) {
-            sum += s.label;
-            min = Math.min(min, s.label);
-            max = Math.max(max, s.label);
-            if (Math.abs(s.label) < 0.05f) nearZero++;
+        List<TrainingDataGen.Sample> samples = SimulateGame.generateGames(10000, 200);
+        Collections.shuffle(samples);
+        List<TrainingDataGen.Sample> subset = samples.subList(0, 500000);
+        
+        try {
+            ModelTrainer.train(subset);
         }
-
-        System.out.println("Mean: " + sum / test.size());
-        System.out.println("Min: " + min + " Max: " + max);
-        System.out.println("Near zero: " + nearZero + "/" + test.size());
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        
     }
 }
