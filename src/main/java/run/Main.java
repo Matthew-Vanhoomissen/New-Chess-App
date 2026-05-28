@@ -19,7 +19,7 @@ import ml.*;
 import ui.*;
 
 public class Main {
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         Board board = new Board();
         board.createBoard();
 
@@ -35,20 +35,5 @@ public class Main {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
-    } */
-
-    public static void main(String[] args) {
-        List<TrainingDataGen.Sample> samples = SimulateGame.generateGames(10000, 200);
-        Collections.shuffle(samples);
-        List<TrainingDataGen.Sample> subset = samples.subList(0, 500000);
-        
-        try {
-            ModelTrainer.train(subset);
-        }
-        catch(IOException e) {
-            System.out.println(e.getMessage());
-        }
-        
-        
-    }
+    } 
 }

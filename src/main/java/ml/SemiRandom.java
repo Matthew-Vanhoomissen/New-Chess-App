@@ -53,7 +53,8 @@ public class SemiRandom {
         return Math.max(-1.0f, Math.min(1.0f, score / 39.0f));
     }
 
-    private static int pieceValue(Piece piece) {
+    public static int pieceValue(Piece piece) {
+        if(piece == null || piece instanceof King) { return 0; }
         if(piece instanceof Pawn) { return 1; }
         if(piece instanceof Knight) { return 3; }
         if(piece instanceof Bishop) { return 3; }

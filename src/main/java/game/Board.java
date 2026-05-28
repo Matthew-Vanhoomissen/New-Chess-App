@@ -77,7 +77,7 @@ public class Board {
                 makeMove(move);
                 boolean inCheck = isKingInCheck(selectedPiece.color);
                 undoMove(move); 
-                if (inCheck) {
+                if (inCheck || move.capturedPiece instanceof King) {
                     legalMoves.remove(i);
                 }
             }

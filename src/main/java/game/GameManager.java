@@ -1,4 +1,5 @@
 package game;
+import java.io.IOException;
 /**
  * @author Matthew Vanhoomissen
  * @version 1.0.1
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 import pieces.*;
 import ui.*;
+import ml.*;
 
 public class GameManager {
    private Board board;
@@ -17,12 +19,18 @@ public class GameManager {
    private ChessPanel panel;
    private Position selectedPosition = null;
    private ArrayList<Move> legalMoves = new ArrayList<>();
+   private ChessEvaluator model;
    
    public GameManager(Board board, ChessPanel panel) {
-    this.board = board;
-    this.panel = panel;
-    this.currentTurn = "white";
-
+      this.board = board;
+      this.panel = panel;
+      this.currentTurn = "white";
+      try {
+         model = ChessEvaluator.load("chess_model3.zip");
+      }
+      catch(IOException e) {
+         System.out.println(e.getMessage());
+      }
    }
 
    /**
@@ -78,6 +86,21 @@ public class GameManager {
    }
 
    public void endTurn() {
+      changeTurn();
+      clearSelection();
+      modelMove();
+   }
+
+   private void modelMove() {
+      Move aiMove = model.getAIMove(board, currentTurn);
+      board.makeMove(aiMove);
+      board.addMove(aiMove);
+      int gameState = board.checkGameState(currentTurn.equals("white") ? "black" : "white");
+      if(gameState != 0) {
+         System.out.println(gameState == 1 ? "Checkmate!" : "Stalemate");
+         clearSelection();
+         return;
+      }
       changeTurn();
       clearSelection();
    }
