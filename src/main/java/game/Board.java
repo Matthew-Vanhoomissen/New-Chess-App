@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import pieces.*;
+import transposition.ZobristHash;
 
 public class Board {
     public Piece[][] pieces;
@@ -11,11 +12,13 @@ public class Board {
     public Move prevMove;
     private Position whiteKing;
     private Position blackKing;
+    private long zobristHash = 0L;
 
 
     public Board() {
         pieces = new Piece[8][8];
         prevMoves = new Stack<>();
+        initZobrist();
     }
 
     public void createBoard() {
@@ -93,6 +96,19 @@ public class Board {
                 Piece piece = pieceThere(i, j);
                 if(piece != null && piece.color.equals(team)) {
                     totalMoves.addAll(getLegalMoves(new Position(i, j)));
+                }
+            }
+        }
+        return totalMoves;
+    }
+
+    public ArrayList<Move> getAllPseudoMoves(String team) {
+        ArrayList<Move> totalMoves = new ArrayList<>();
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                Piece piece = pieceThere(i, j);
+                if(piece != null && piece.color.equals(team)) {
+                    totalMoves.addAll(piece.getPseudoLegalMoves(this, new Position(i, j)));
                 }
             }
         }
@@ -229,6 +245,12 @@ public class Board {
     }
 
     public void makeMove(Move move) {
+        zobristHash ^= ZobristHash.get(move.piece, move.end.row * 8 + move.end.col);
+        if (move.capturedPiece != null)
+            zobristHash ^= ZobristHash.get(move.capturedPiece, move.end.row * 8 + move.end.col);
+        zobristHash ^= ZobristHash.get(move.piece, move.start.row * 8 + move.start.col);
+        zobristHash ^= ZobristHash.getBlackToMove();
+
         move.prevLastMove = this.prevMove;
         Piece movedPiece = move.piece;
 
@@ -259,6 +281,12 @@ public class Board {
     }
 
     public void undoMove(Move move) {
+        zobristHash ^= ZobristHash.get(move.piece, move.end.row * 8 + move.end.col);
+        if (move.capturedPiece != null)
+            zobristHash ^= ZobristHash.get(move.capturedPiece, move.end.row * 8 + move.end.col);
+        zobristHash ^= ZobristHash.get(move.piece, move.start.row * 8 + move.start.col);
+        zobristHash ^= ZobristHash.getBlackToMove();
+
         Piece movedPiece = move.piece;
 
         pieces[move.start.row][move.start.col] = move.piece;
@@ -317,6 +345,7 @@ public class Board {
     public boolean kingSideCastle(String color) {
         Position kingPosition = color.equals("white") ? whiteKing : blackKing; 
         Piece king = pieceThere(kingPosition.row, kingPosition.col);
+        if(king == null) { return false; }
 
         if(king.hasMoved) { return false; }
         Piece rook = pieceThere(kingPosition.row, 7);
@@ -327,11 +356,31 @@ public class Board {
     public boolean queenSideCastle(String color) {
         Position kingPosition = color.equals("white") ? whiteKing : blackKing; 
         Piece king = pieceThere(kingPosition.row, kingPosition.col);
+        if(king == null) { return false; }
 
         if(king.hasMoved) { return false; }
         Piece rook = pieceThere(kingPosition.row, 0);
         if(rook != null && rook instanceof Rook && !rook.hasMoved && rook.color.equals(color)) { return true;}
         return false;
+    }
+
+    public long getZobristHash() {
+        return zobristHash;
+    }
+
+    public void initZobrist() {
+        zobristHash = 0L;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece p = pieceThere(i, j);
+                if (p != null)
+                    zobristHash ^= ZobristHash.get(p, i * 8 + j);
+            }
+        }
+    }
+
+    public void switchTurn() {
+        zobristHash ^= ZobristHash.getBlackToMove();
     }
 
 }

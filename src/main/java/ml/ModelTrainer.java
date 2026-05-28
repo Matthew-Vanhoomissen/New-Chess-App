@@ -26,19 +26,15 @@ public class ModelTrainer {
             .updater(new Adam(0.001))
             .list()
             .layer(new DenseLayer.Builder()
-                .nIn(781).nOut(512)
+                .nIn(781).nOut(64)
                 .activation(Activation.RELU)
                 .build())
             .layer(new DenseLayer.Builder()
-                .nIn(512).nOut(256)
-                .activation(Activation.RELU)
-                .build())
-            .layer(new DenseLayer.Builder()
-                .nIn(256).nOut(128)
+                .nIn(64).nOut(32)
                 .activation(Activation.RELU)
                 .build())
             .layer(new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
-                .nIn(128).nOut(1)
+                .nIn(32).nOut(1)
                 .activation(Activation.TANH)
                 .build())
             .build();
@@ -102,7 +98,7 @@ public class ModelTrainer {
             System.out.println("Epoch " + epoch + " - train loss: " + trainLoss + " val loss: " + valLoss);
         }
 
-        ModelSerializer.writeModel(model, "chess_model3.zip", true);
+        ModelSerializer.writeModel(model, "chess_model.zip", true);
         System.out.println("Model saved");
     }
 }

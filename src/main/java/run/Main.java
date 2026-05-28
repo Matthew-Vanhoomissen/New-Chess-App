@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.bytedeco.videoinput.videoDevice;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -36,4 +37,14 @@ public class Main {
         frame.setResizable(false);
         frame.setVisible(true);
     } 
+    /*public static void main(String[] args) {
+        List<TrainingDataGen.Sample> samples = SimulateGame.generateGames(10000, 200);
+        Collections.shuffle(samples);
+        try {
+            ModelTrainer.train(samples.subList(0, 500000));
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
+    } */
 }

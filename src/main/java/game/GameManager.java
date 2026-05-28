@@ -26,7 +26,9 @@ public class GameManager {
       this.panel = panel;
       this.currentTurn = "white";
       try {
-         model = ChessEvaluator.load("chess_model3.zip");
+         model = ChessEvaluator.loadForRuntime("chess_weights.bin");
+         //model = ChessEvaluator.load("chess_model.zip");
+         //model.exportWeights("chess_weights.bin");
       }
       catch(IOException e) {
          System.out.println(e.getMessage());
