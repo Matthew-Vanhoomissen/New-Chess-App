@@ -138,12 +138,12 @@ public class ChessEvaluator {
         boolean isMaximizing = aiColor.equals("white");
         long startTime = System.currentTimeMillis();
 
-        for (int depth = 1; depth <= 5; depth++) {
+        for (int depth = 1; depth <= 6; depth++) {
             Move candidate = searchRoot(board, aiColor, isMaximizing, depth);
             if (candidate != null) bestMove = candidate;
             long elapsed = System.currentTimeMillis() - startTime;
             System.out.println("Depth " + depth + " done in " + elapsed + "ms");
-            if (elapsed > 6000) break; // stop if taking too long
+            if (elapsed > 20000) break; // stop if taking too long
         }
         return bestMove;
     }
