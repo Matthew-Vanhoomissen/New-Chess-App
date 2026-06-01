@@ -196,7 +196,7 @@ public class ChessEvaluator {
         // Leaf node evaluation
         if (depth == 0) {
             //float score = nnEvaluator.evaluate(currentState);
-            float score = quiescence(currentState, alpha, beta, maximizing);
+            float score = hybridEvaluate(currentState);
             transpositionTable.put(hash, new TTEntry(score, 0, TTEntry.EXACT, null));
             return score;
         }
@@ -208,6 +208,11 @@ public class ChessEvaluator {
             boolean hasMoved = false;
             
             for(Move m : ordered) {
+                if(m.castleMove) {
+                    if(!currentState.castleCheck(currColor, m)) {
+                        continue;
+                    }
+                }
                 currentState.makeMove(m);
                 if(currentState.isKingInCheck(currColor)) {
                     currentState.undoMove(m);
@@ -245,6 +250,11 @@ public class ChessEvaluator {
             boolean hasMoved = false;
 
             for(Move m : ordered) {
+                if(m.castleMove) {
+                    if(!currentState.castleCheck(currColor, m)) {
+                        continue;
+                    }
+                }
                 currentState.makeMove(m);
                 if(currentState.isKingInCheck(currColor)) {
                     currentState.undoMove(m);
@@ -326,56 +336,5 @@ public class ChessEvaluator {
         }
         return Math.max(-1.0f, Math.min(1.0f, score / 39.0f));
     }
-    private float quiescence(Board board, float alpha, float beta, boolean maximizing) {
-        // Evaluate the position as-is first
-        float standPat = hybridEvaluate(board);
-
-        if (maximizing) {
-            if (standPat >= beta) return beta;
-            alpha = Math.max(alpha, standPat);
-        } else {
-            if (standPat <= alpha) return alpha;
-            beta = Math.min(beta, standPat);
-        }
-
-        String currColor = maximizing ? "white" : "black";
-
-        
-
-        // Only search captures and checks
-        ArrayList<Move> pseudoMoves = board.getAllPseudoMoves(currColor);
-        List<Move> captures = pseudoMoves.stream()
-            .filter(m -> m.capturedPiece != null)
-            .sorted((a, b) -> mvvLva(b) - mvvLva(a)) // best captures first
-            .collect(Collectors.toList());
-
-        if (captures.isEmpty()) return standPat;
-
-        for (Move m : captures) {
-            board.makeMove(m);
-            if (board.isKingInCheck(currColor)) {
-                board.undoMove(m);
-                continue;
-            }
-
-            float DELTA = 0.2f; // roughly a pawn in your normalized scale
-            if (standPat + SemiRandom.pieceValue(m.capturedPiece) / 39.0f + DELTA < alpha) {
-                board.undoMove(m);
-                continue; // this capture can't raise alpha, skip it
-            }
-
-            float score = quiescence(board, alpha, beta, !maximizing);
-            board.undoMove(m);
-
-            if (maximizing) {
-                alpha = Math.max(alpha, score);
-                if (beta <= alpha) return beta;
-            } else {
-                beta = Math.min(beta, score);
-                if (beta <= alpha) return alpha;
-            }
-        }
-
-        return maximizing ? alpha : beta;
-    }
+    
 }

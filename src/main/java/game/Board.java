@@ -390,7 +390,7 @@ public class Board {
     }
 
     private Piece getType(String type, String color) {
-        switch (color) {
+        switch (type) {
             case "queen":
                 return new Queen(color);
             case "rook":

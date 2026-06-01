@@ -16,15 +16,21 @@ import ml.*;
 public class GameManager {
    private Board board;
    private String currentTurn;
+   private String playerColor;
+   private String aiColor;
    private ChessPanel panel;
    private Position selectedPosition = null;
    private ArrayList<Move> legalMoves = new ArrayList<>();
    private ChessEvaluator model;
+
+   private boolean firstMove = true;
    
-   public GameManager(Board board, ChessPanel panel) {
+   public GameManager(Board board, ChessPanel panel, String playerColor) {
       this.board = board;
       this.panel = panel;
       this.currentTurn = "white";
+      this.playerColor = playerColor;
+      this.aiColor = (playerColor.equals("white") ? "black" : "white");
       try {
          model = ChessEvaluator.loadForRuntime("best_model.bin");
          //model = ChessEvaluator.load("best_model.zip");
@@ -43,15 +49,22 @@ public class GameManager {
     * selects one
     */
    public void handleClick(Position pos) {
-        Piece piece = board.pieceThere(pos.row, pos.col);
-        if(selectedPosition == null) {
-            if(piece != null && piece.color.equals(currentTurn)) {
-               selectPiece(pos);
-               return;
-            }
-        }
+      if(firstMove && aiColor.equals("white")) {
+         firstMove = false;
+         modelMove();
+         return;
+      }
+      Piece piece = board.pieceThere(pos.row, pos.col);
+      if(selectedPosition == null) {
+         if(piece != null && piece.color.equals(currentTurn)) {
+            System.out.println(currentTurn + "\n");
+            System.out.println(piece.color);
+            selectPiece(pos);
+            return;
+         }
+      }
         
-        moveOrReselect(pos, piece);
+      moveOrReselect(pos, piece);
         
    }
 
@@ -67,14 +80,9 @@ public class GameManager {
       Move move = findMoveTo(pos);
 
       if(move != null) {
+         firstMove = false;
          board.makeMove(move);
-         board.addMove(move);
-         int gameState = board.checkGameState(currentTurn.equals("white") ? "black" : "white");
-         if(gameState != 0) {
-            System.out.println(gameState == 1 ? "Checkmate!" : "Stalemate");
-            clearSelection();
-            return;
-         }
+         board.addMove(move);         
          endTurn();
          return;
       }
@@ -90,21 +98,30 @@ public class GameManager {
    public void endTurn() {
       changeTurn();
       clearSelection();
-      modelMove();
+      int state = board.checkGameState(currentTurn);
+      if(state != 0) {
+         if(state == 1) { // Checkmate
+            String winner = currentTurn.equals("white") ? "Black wins" : "White wins";
+            panel.showGameOver(winner);
+            return;
+         }
+         else { //Stalemate
+            panel.showGameOver("Stalemate");
+            return;
+         }
+      }
+      // Trigger AI if it's the AI's turn
+      if (currentTurn.equals(aiColor)) {
+         modelMove();
+      }
    }
 
    private void modelMove() {
       Move aiMove = model.getAIMove(board, currentTurn);
       board.makeMove(aiMove);
       board.addMove(aiMove);
-      int gameState = board.checkGameState(currentTurn.equals("white") ? "black" : "white");
-      if(gameState != 0) {
-         System.out.println(gameState == 1 ? "Checkmate!" : "Stalemate");
-         clearSelection();
-         return;
-      }
-      changeTurn();
-      clearSelection();
+      endTurn();
+      System.out.println(currentTurn);
    }
 
    public void clearSelection() {
@@ -129,6 +146,10 @@ public class GameManager {
       else {
          this.currentTurn = "white";
       }
+   }
+
+   public String getPlayerColor() {
+      return playerColor;
    }
 
 }

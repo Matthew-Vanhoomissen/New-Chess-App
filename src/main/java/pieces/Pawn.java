@@ -45,10 +45,18 @@ public class Pawn extends Piece{
 
         if(piece1 != null || piece2 != null) {
             if(piece1 != null && !piece1.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col - 1), piece1));
+                Move newMove = new Move(this, from, new Position(from.row + direction, from.col - 1), piece1);
+                if(onPromotionRank) {
+                    newMove.promotionType = "queen";
+                }
+                pseudoMoves.add(newMove);
             }
             if(piece2 != null && !piece2.color.equals(this.color)) {
-                pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col + 1), piece2));
+                Move newMove = new Move(this, from, new Position(from.row + direction, from.col + 1), piece2);
+                if(onPromotionRank) {
+                    newMove.promotionType = "queen";
+                }
+                pseudoMoves.add(newMove);
             }
 
         }

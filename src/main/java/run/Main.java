@@ -25,22 +25,10 @@ import parser.*;
 public class Main {
     
     public static void main(String[] args) {
-        Board board = new Board();
-        board.createBoard();
-
-        JFrame frame = new JFrame("Chess");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        ChessPanel panel = new ChessPanel(board);
-        GameManager manager = new GameManager(board, panel);
-        panel.setManager(manager);
-        
-        frame.add(panel);
-
-        frame.pack();
-        frame.setResizable(false);
-        frame.setVisible(true);
-    } 
+        SwingUtilities.invokeLater(() -> {
+            new StartWindow();
+        });
+    }
     
     /*
     public static void main(String[] args) {
