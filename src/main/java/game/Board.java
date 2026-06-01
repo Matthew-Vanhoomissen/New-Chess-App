@@ -258,7 +258,13 @@ public class Board {
 
         pieces[move.start.row][move.start.col] = null;
 
-        pieces[move.end.row][move.end.col] = movedPiece;
+        if(!move.promotionType.isEmpty()) {
+            pieces[move.end.row][move.end.col] = getType(move.promotionType, movedPiece.color);
+        }
+        else {
+            pieces[move.end.row][move.end.col] = movedPiece;
+        }
+        
 
         if(movedPiece instanceof King) {
             Position king = (movedPiece.color.equals("white") ? whiteKing : blackKing);
@@ -381,6 +387,20 @@ public class Board {
 
     public void switchTurn() {
         zobristHash ^= ZobristHash.getBlackToMove();
+    }
+
+    private Piece getType(String type, String color) {
+        switch (color) {
+            case "queen":
+                return new Queen(color);
+            case "rook":
+                return new Rook(color);
+            case "knight":
+                return new Knight(color);
+            case "bishop":
+                return new Bishop(color);
+        }
+        return null;
     }
 
 }

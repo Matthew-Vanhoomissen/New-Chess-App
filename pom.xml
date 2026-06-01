@@ -4,7 +4,7 @@
     <artifactId>chess-engine</artifactId>
     <version>1.0</version>
 
-    <!-- Repositories must be at top level, not inside dependencies -->
+    <!-- ChessLib -->
     <repositories>
         <repository>
             <id>jitpack.io</id>

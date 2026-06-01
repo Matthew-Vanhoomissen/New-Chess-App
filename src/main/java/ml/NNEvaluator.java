@@ -5,26 +5,30 @@ import java.io.*;
 
 public class NNEvaluator {
     // Layer weights as 2D arrays [output][input]
-    private final float[][] w1, w2, w3;
-    private final float[]   b1, b2, b3;
+    private final float[][] w1, w2, w3, w4;
+    private final float[]   b1, b2, b3, b4;
 
     // Reusable buffers — avoids allocation on every call
-    private final float[] layer1Out = new float[64];
-    private final float[] layer2Out = new float[32];
+    private final float[] layer1Out = new float[128];
+    private final float[] layer2Out = new float[64];
+    private final float[] layer3Out = new float[32];
 
     public NNEvaluator(String weightsPath) throws IOException {
         try (DataInputStream dis = new DataInputStream(
                 new BufferedInputStream(new FileInputStream(weightsPath)))) {
 
-            // Layer 1: 781 -> 64
-            w1 = readMatrix(dis, 64, 781);
-            b1 = readArray(dis, 64);
-            // Layer 2: 64 -> 32
-            w2 = readMatrix(dis, 32, 64);
-            b2 = readArray(dis, 32);
+            // Layer 1: 781 -> 128
+            w1 = readMatrix(dis, 128, 781);
+            b1 = readArray(dis, 128);
+            // Layer 2: 128 -> 64
+            w2 = readMatrix(dis, 64, 128);
+            b2 = readArray(dis, 64);
+            // Layer 3: 64 -> 32
+            w3 = readMatrix(dis, 32, 64);
+            b3 = readArray(dis, 32);
             // Output: 32 -> 1
-            w3 = readMatrix(dis, 1, 32);
-            b3 = readArray(dis, 1);
+            w4 = readMatrix(dis, 1, 32);
+            b4 = readArray(dis, 1);
         }
         System.out.println("Weights loaded from " + weightsPath);
     }
@@ -39,8 +43,11 @@ public class NNEvaluator {
         linear(w2, b2, layer1Out, layer2Out);
         relu(layer2Out);
 
+        linear(w3, b3, layer2Out, layer3Out);
+        relu(layer3Out);
+
         float[] out = new float[1];
-        linear(w3, b3, layer2Out, out);
+        linear(w4, b4, layer3Out, out);
         return (float) Math.tanh(out[0]);
     }
 

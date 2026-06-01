@@ -32,6 +32,7 @@ public class PGNParser {
                 samples.addAll(gameSamples);
             } catch (Exception e) {
                 // Skip malformed games
+                System.out.println("Issue");
                 continue;
             }
         }
@@ -39,7 +40,7 @@ public class PGNParser {
         return samples;
     }
 
-    private static List<TrainingDataGen.Sample> processGame(MoveList moves, float label) {
+        private static List<TrainingDataGen.Sample> processGame(MoveList moves, float label) {
         List<TrainingDataGen.Sample> samples = new ArrayList<>();
         Board board = new Board();
         board.createBoard();
@@ -51,41 +52,72 @@ public class PGNParser {
 
             // Translate ChessLib move to your Move
             Move move = translateMove(board, chessMove);
-            if (move == null) break; // couldn't translate, skip rest of game
+            if (move == null) {
+                System.out.println("Issue");
+                break; // couldn't translate, skip rest of game
+            }
             board.makeMove(move);
         }
         return samples;
     }
 
     private static Move translateMove(Board board, com.github.bhlangonijr.chesslib.move.Move chessMove) {
-        // ChessLib uses algebraic square names like "e2", "e4"
-        String from = chessMove.getFrom().value(); // e.g. "e2"
-        String to   = chessMove.getTo().value();   // e.g. "e4"
+        String from = chessMove.getFrom().value();
+        String to   = chessMove.getTo().value();
 
         Position fromPos = algebraicToPosition(from);
         Position toPos   = algebraicToPosition(to);
+        System.out.println(from + " translated to " + fromPos);
+        System.out.println(to + " translated to " + toPos);
+
 
         Piece piece = board.pieceThere(fromPos.row, fromPos.col);
         if (piece == null) return null;
 
+        // Castling — king moves two squares
+        if (piece instanceof King && Math.abs(fromPos.col - toPos.col) == 2) {
+            boolean kingSide = toPos.col > fromPos.col;
+
+            // Rook positions depend on side
+            int rookStartCol = kingSide ? 7 : 0;
+            int rookEndCol   = kingSide ? 5 : 3;
+
+            Position rookStart = new Position(fromPos.row, rookStartCol);
+            Position rookEnd   = new Position(fromPos.row, rookEndCol);
+            Piece rook = board.pieceThere(rookStart.row, rookStart.col);
+
+            if (rook == null) return null;
+            return new Move(piece, fromPos, toPos, rook, rookStart, rookEnd);
+        }
+
         Piece captured = board.pieceThere(toPos.row, toPos.col);
 
-        // Check en passant
-        Move move = new Move(piece, fromPos, toPos, captured);
-        if (piece instanceof Pawn && captured == null && fromPos.col != toPos.col) {
-            // Pawn moved diagonally without capture = en passant
+        // En passant — pawn moves diagonal to empty square
+        if (piece instanceof Pawn && captured == null 
+                && fromPos.col != toPos.col) {
+            Move move = new Move(piece, fromPos, toPos, null);
             move.enPassantMove = true;
             move.enPassantPosition = new Position(fromPos.row, toPos.col);
             move.enPassantPiece = board.pieceThere(fromPos.row, toPos.col);
-            move.capturedPiece = null;
+            return move;
         }
 
-        return move;
+        // Promotion — pawn reaches back rank
+        if (piece instanceof Pawn && (toPos.row == 0 || toPos.row == 7)) {
+            // ChessLib tells you what piece it promotes to
+            String promoted = chessMove.getPromotion().value();
+            Move move = new Move(piece, fromPos, toPos, captured);
+            move.promotionType = promoted.toLowerCase();
+            return move;
+        }
+
+        // Standard move
+        return new Move(piece, fromPos, toPos, captured);
     }
 
     // "e2" -> Position(6, 4) in your row/col format
     private static Position algebraicToPosition(String square) {
-        int col = square.charAt(0) - 'a';         // a=0, b=1, ... h=7
+        int col = square.charAt(0) - 'A';         // a=0, b=1, ... h=7
         int row = 8 - (square.charAt(1) - '0');   // 1=row7, 8=row0
         return new Position(row, col);
     }

@@ -20,13 +20,20 @@ public class Pawn extends Piece{
         boolean onStartingRank =
             (color.equals("white") && from.row == 6) ||
             (color.equals("black") && from.row == 1);
+        boolean onPromotionRank = 
+            (color.equals("white") && from.row == 1) || 
+            (color.equals("black") && from.row == 6);
 
         //Moving forward or up 2
         Piece piece1 = board.pieceThere(from.row + direction, from.col);
         Piece piece2 = board.pieceThere(from.row + 2 * direction, from.col);
         
         if(piece1 == null && from.row + direction >= 0 && from.row + direction <= 7) {
-            pseudoMoves.add(new Move(this, from, new Position(from.row + direction, from.col), null));
+            Move newMove = new Move(this, from, new Position(from.row + direction, from.col), null);
+            if(onPromotionRank) {
+                newMove.promotionType = "queen";
+            }
+            pseudoMoves.add(newMove);
             if(onStartingRank && piece2 == null) {
                 pseudoMoves.add(new Move(this, from, new Position(from.row + 2 * direction, from.col), null));
             }

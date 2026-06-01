@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
@@ -138,7 +139,7 @@ public class ChessEvaluator {
         boolean isMaximizing = aiColor.equals("white");
         long startTime = System.currentTimeMillis();
 
-        for (int depth = 1; depth <= 6; depth++) {
+        for (int depth = 1; depth <= 4; depth++) {
             Move candidate = searchRoot(board, aiColor, isMaximizing, depth);
             if (candidate != null) bestMove = candidate;
             long elapsed = System.currentTimeMillis() - startTime;
@@ -152,21 +153,21 @@ public class ChessEvaluator {
         ArrayList<Move> moves = board.getAllPseudoMoves(aiColor);
         Move bestMove = null;
         float bestScore = isMaximizing ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
-        float alpha = Float.NEGATIVE_INFINITY;
-        float beta  = Float.POSITIVE_INFINITY;
 
+        // Use full window at root — don't tighten alpha/beta between moves
         for (Move m : orderMoves(moves, board)) {
             board.makeMove(m);
             if (board.isKingInCheck(aiColor)) { board.undoMove(m); continue; }
 
-            float val = minimax(board, depth - 1, alpha, beta, !isMaximizing);
+            float val = minimax(board, depth - 1, 
+                            Float.NEGATIVE_INFINITY,  // fresh window each move
+                            Float.POSITIVE_INFINITY, 
+                            !isMaximizing);
             board.undoMove(m);
 
             if (isMaximizing ? val > bestScore : val < bestScore) {
                 bestScore = val;
                 bestMove = m;
-                if (isMaximizing) alpha = Math.max(alpha, val);
-                else              beta  = Math.min(beta, val);
             }
         }
         return bestMove;
@@ -186,10 +187,18 @@ public class ChessEvaluator {
 
         
         ArrayList<Move> allTeamMoves = currentState.getAllPseudoMoves(currColor);
-        if(depth == 0 || allTeamMoves.isEmpty()) { //At end of the tree
-            float score = nnEvaluator.evaluate(currentState);
+        if (allTeamMoves.isEmpty()) {
+            return currentState.isKingInCheck(currColor)
+                ? (maximizing ? -1.0f : 1.0f)
+                : 0.0f;
+        }
+
+        // Leaf node evaluation
+        if (depth == 0) {
+            //float score = nnEvaluator.evaluate(currentState);
+            float score = quiescence(currentState, alpha, beta, maximizing);
             transpositionTable.put(hash, new TTEntry(score, 0, TTEntry.EXACT, null));
-            return score; //The NN board score go here;
+            return score;
         }
         List<Move> ordered = orderMoves(allTeamMoves, currentState);
         if(maximizing) { //Maximizing score
@@ -289,5 +298,84 @@ public class ChessEvaluator {
             return mvvLva(b) - mvvLva(a);
         });
         return copy;
+    }
+    private float hybridEvaluate(Board currentState) {
+        float nnScore = nnEvaluator.evaluate(currentState);
+
+        // If NN thinks position is roughly equal, verify with material
+        if (Math.abs(nnScore) < 0.15f) {
+            float materialScore = getMaterialScore(currentState);
+
+            // If material is significantly imbalanced despite NN saying equal,
+            // blend toward the material score
+            if (Math.abs(materialScore) > 0.05f) {
+                return 0.5f * nnScore + 0.5f * materialScore;
+            }
+        }
+        return nnScore;
+    }
+    private float getMaterialScore(Board board) {
+        float score = 0;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece p = board.pieceThere(i, j);
+                if (p == null) continue;
+                float val = SemiRandom.pieceValue(p);
+                score += p.color.equals("white") ? val : -val;
+            }
+        }
+        return Math.max(-1.0f, Math.min(1.0f, score / 39.0f));
+    }
+    private float quiescence(Board board, float alpha, float beta, boolean maximizing) {
+        // Evaluate the position as-is first
+        float standPat = hybridEvaluate(board);
+
+        if (maximizing) {
+            if (standPat >= beta) return beta;
+            alpha = Math.max(alpha, standPat);
+        } else {
+            if (standPat <= alpha) return alpha;
+            beta = Math.min(beta, standPat);
+        }
+
+        String currColor = maximizing ? "white" : "black";
+
+        
+
+        // Only search captures and checks
+        ArrayList<Move> pseudoMoves = board.getAllPseudoMoves(currColor);
+        List<Move> captures = pseudoMoves.stream()
+            .filter(m -> m.capturedPiece != null)
+            .sorted((a, b) -> mvvLva(b) - mvvLva(a)) // best captures first
+            .collect(Collectors.toList());
+
+        if (captures.isEmpty()) return standPat;
+
+        for (Move m : captures) {
+            board.makeMove(m);
+            if (board.isKingInCheck(currColor)) {
+                board.undoMove(m);
+                continue;
+            }
+
+            float DELTA = 0.2f; // roughly a pawn in your normalized scale
+            if (standPat + SemiRandom.pieceValue(m.capturedPiece) / 39.0f + DELTA < alpha) {
+                board.undoMove(m);
+                continue; // this capture can't raise alpha, skip it
+            }
+
+            float score = quiescence(board, alpha, beta, !maximizing);
+            board.undoMove(m);
+
+            if (maximizing) {
+                alpha = Math.max(alpha, score);
+                if (beta <= alpha) return beta;
+            } else {
+                beta = Math.min(beta, score);
+                if (beta <= alpha) return alpha;
+            }
+        }
+
+        return maximizing ? alpha : beta;
     }
 }

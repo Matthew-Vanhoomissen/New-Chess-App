@@ -19,6 +19,8 @@ public class Move {
     public boolean castleMove;
 
     public Move prevLastMove;
+
+    public String promotionType = "";
     
 
     public Move(Piece piece, Position start, Position end, Piece capturedPiece) {
