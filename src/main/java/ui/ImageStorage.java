@@ -1,4 +1,12 @@
 package ui;
+
+/**
+ * Stores path to image into HashMap given piece color and type for fast
+ * lookup
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import java.awt.Image;
 import java.util.HashMap;
 import javax.swing.ImageIcon;

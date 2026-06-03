@@ -1,5 +1,12 @@
 package ml;
 
+/**
+ * Sample object is used for training with the float array input and label which is 
+ * expected result
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 public class TrainingDataGen {
     // One training sample
     public static class Sample {

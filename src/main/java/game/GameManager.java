@@ -1,12 +1,14 @@
 package game;
-import java.io.IOException;
 /**
- * @author Matthew Vanhoomissen
- * @version 1.0.1
  * Game manager class that controlls game operations
- * like current turn and checks if the input is a 
- * valid move
+ * like current turn end can appropriately conclude the game
+ * 
+ * 
+ * @author Matthew-Vanhoomissen
  */
+
+import java.io.IOException;
+
 import java.util.ArrayList;
 
 import pieces.*;

@@ -1,5 +1,13 @@
 package transposition;
 
+/**
+ * TTEntry is the hash object contained in the transposition table to store
+ * already known inputs and outputs for faster runtime of minmax algorithm
+ * and alpha beta pruning
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import game.Move;
 
 public class TTEntry {

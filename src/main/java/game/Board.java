@@ -1,4 +1,11 @@
 package game;
+/**
+ * Board class to govern movement, determines valid moves, and 
+ * holds piece location
+ * 
+ * 
+ * @author Matthew-Vanhoomissen
+ */
 
 import java.util.ArrayList;
 import java.util.Stack;

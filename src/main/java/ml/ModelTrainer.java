@@ -1,5 +1,12 @@
 package ml;
 
+/**
+ * Creates the layers and nodes for the neural network and in training 
+ * effectively measures loss and adjusts weights and biases. 
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.deeplearning4j.nn.conf.*;
 import org.deeplearning4j.nn.conf.layers.*;

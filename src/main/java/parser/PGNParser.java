@@ -1,5 +1,13 @@
 package parser;
 
+/**
+ * Utilizes ChessLib library to parse PGN (chess game files) into 
+ * compatible moves to simulate games and populate the training and testing
+ * sample list
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
 import com.github.bhlangonijr.chesslib.game.Game;
 import com.github.bhlangonijr.chesslib.move.MoveList;

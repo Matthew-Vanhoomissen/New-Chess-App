@@ -1,4 +1,11 @@
 package pieces;
+
+/**
+ * Queen specific movement
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import java.util.ArrayList;
 
 import game.*;

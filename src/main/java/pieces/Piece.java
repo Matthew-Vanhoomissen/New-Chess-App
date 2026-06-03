@@ -1,4 +1,12 @@
 package pieces;
+
+/**
+ * Piece parent class that containts information about piece like
+ * color, type, and if it has moved
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import java.util.ArrayList;
 
 import game.*;

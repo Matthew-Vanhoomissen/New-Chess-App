@@ -1,5 +1,12 @@
 package ml;
 
+/**
+ * Contains all methods to have chess bot choose the best move given the board as 
+ * an input. Uses minmax algorithm with neural network and other optimizing features
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import game.*;
 import pieces.*;
 import transposition.*;
@@ -42,68 +49,6 @@ public class ChessEvaluator {
     public static ChessEvaluator loadForExport(String modelPath) throws IOException {
         MultiLayerNetwork model = ModelSerializer.restoreMultiLayerNetwork(modelPath);
         return new ChessEvaluator(model);
-    }
-
-    /*public float evaluate(Board board) {
-        float[] input = BoardEncoder.convertBoard(board);
-        reusableInput.assign(Nd4j.create(input).reshape(1, 781));
-        return model.output(reusableInput).getFloat(0); // single value between -1 and 1
-    } */
-
-    /*public float simpleEvaluate(Board board) {
-        float white = 0, black = 0;
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Piece p = board.pieceThere(i, j);
-                if (p == null) continue;
-
-                boolean isWhite = p.color.equals("white");
-
-                // 1 - Material
-                float material = SemiRandom.pieceValue(p);
-
-                // 3 - Pawn structure
-                float pawnBonus = 0;
-                if (p instanceof Pawn) {
-                    // Bonus for being closer to promotion
-                    pawnBonus += isWhite ? (6 - i) * 0.05f : i * 0.05f;
-                    // Penalty for doubled pawns (another pawn on same file)
-                    pawnBonus -= countPawnsOnFile(board, j, p.color) > 1 ? 0.3f : 0;
-                }
-
-                // 4 - King safety (penalty for exposed king)
-                float kingSafety = 0;
-                if (p instanceof King) {
-                    kingSafety -= board.getLegalMoves(new Position(i, j)).size() * 0.2f;
-                    kingSafety += p.hasMoved ? -0.5f : 0; // penalty if king has moved (lost castling)
-                }
-
-                // 5 - Center control bonus for knights/bishops
-                float centerBonus = 0;
-                if (p instanceof Knight || p instanceof Bishop) {
-                    boolean nearCenter = (i >= 2 && i <= 5 && j >= 2 && j <= 5);
-                    centerBonus += nearCenter ? 0.2f : 0;
-                }
-
-                float total = material+ pawnBonus + kingSafety + centerBonus;
-                if (isWhite) white += total;
-                else         black += total;
-            }
-        }
-
-        return (white - black) / 39.0f; // normalize to roughly -1 to 1
-    } */
-
-    private int countPawnsOnFile(Board board, int j, String color) {
-        int counter = 0;
-        for(int i = 0; i < 8; i++) {
-            Piece piece = board.pieceThere(i, j);
-            if(piece != null && piece instanceof Pawn && piece.color.equals(color)) {
-                counter++;
-            }
-        }
-        return counter;
     }
 
     public void save(String path) throws IOException {
@@ -286,11 +231,21 @@ public class ChessEvaluator {
         }
     } 
 
+    private int pieceValue(Piece piece) {
+        if(piece == null || piece instanceof King) { return 0; }
+        if(piece instanceof Pawn) { return 1; }
+        if(piece instanceof Knight) { return 3; }
+        if(piece instanceof Bishop) { return 3; }
+        if(piece instanceof Rook) { return 5; }
+        if(piece instanceof Queen) { return 9; }
+        throw new IllegalArgumentException("Unknown piece type");
+    }
+
     private int mvvLva(Move m) {
         if (m.capturedPiece == null) return 0;
         // Prioritize capturing high value pieces with low value pieces
-        return SemiRandom.pieceValue(m.capturedPiece) * 10 
-            - SemiRandom.pieceValue(m.piece);
+        return pieceValue(m.capturedPiece) * 10 
+            - pieceValue(m.piece);
     }
 
     private List<Move> orderMoves(ArrayList<Move> moves, Board board) {
@@ -330,7 +285,7 @@ public class ChessEvaluator {
             for (int j = 0; j < 8; j++) {
                 Piece p = board.pieceThere(i, j);
                 if (p == null) continue;
-                float val = SemiRandom.pieceValue(p);
+                float val = pieceValue(p);
                 score += p.color.equals("white") ? val : -val;
             }
         }

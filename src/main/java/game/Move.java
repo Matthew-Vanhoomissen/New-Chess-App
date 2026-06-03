@@ -1,4 +1,10 @@
 package game;
+/**
+ * Move class that stores piece moved, captured, positional data, and any
+ * other special identifiers for castling or en passant
+ * 
+ * @author Matthew-Vanhoomissen
+ */
 
 import pieces.*;
 

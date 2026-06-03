@@ -1,5 +1,12 @@
 package ml;
 
+/**
+ * Uses reusable buffers and strict float array inputs to simulate forward propogation
+ * without using ND4 overhead which can become less time efficient in deep searches
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import game.*;
 import java.io.*;
 

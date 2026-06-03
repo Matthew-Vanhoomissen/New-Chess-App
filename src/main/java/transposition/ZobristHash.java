@@ -1,5 +1,12 @@
 package transposition;
 
+/**
+ * Translates a board state into hash value so each board has
+ * a unique key which is stored in the table
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import java.util.Random;
 
 import game.*;

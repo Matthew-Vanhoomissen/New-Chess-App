@@ -1,5 +1,12 @@
 package ui;
 
+/**
+ * Renders board screen and all user inputs. Draws board, pieces, possible 
+ * moves, and end of game button so reset
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import javax.swing.*;
 import game.*;
 import pieces.*;

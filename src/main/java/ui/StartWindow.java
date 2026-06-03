@@ -1,5 +1,12 @@
 package ui;
 
+/**
+ * Creates starting window for the application. Allows team switching and board 
+ * resizing. Initializes game on successful player input
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;

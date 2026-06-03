@@ -1,4 +1,9 @@
 package game;
+/**
+ * Object to store row and column coordinates as a singular object
+ * 
+ * @author Matthew-Vanhoomissen
+ */
 
 public class Position {
     public int row;

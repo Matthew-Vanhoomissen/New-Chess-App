@@ -1,5 +1,12 @@
 package ml;
 
+/**
+ * Encodes the board into a binary float array that can be 
+ * fed as inputs into the neural network as the game state
+ * 
+ * @author Matthew-Vanhoomissen
+ */
+
 import game.*;
 import pieces.*;
 
