@@ -84,7 +84,6 @@ public class GameManager {
       if(move != null) {
          firstMove = false;
          board.makeMove(move);
-         board.addMove(move);         
          endTurn();
          return;
       }
@@ -121,7 +120,6 @@ public class GameManager {
    private void modelMove() {
       Move aiMove = model.getAIMove(board, currentTurn);
       board.makeMove(aiMove);
-      board.addMove(aiMove);
       endTurn();
       System.out.println(currentTurn);
    }
