@@ -27,6 +27,15 @@ public class GameManager {
 
    private boolean firstMove = true;
    
+   /**
+    * Constructor to initialize object variables to correct starting value.
+    * Can load model from weights or can generate weights from .zip file
+    * of the full model.
+    * 
+    * @param board the manager utilizes
+    * @param panel visual rendering
+    * @param playerColor starts as white or black depending on input
+    */
    public GameManager(Board board, ChessPanel panel, String playerColor) {
       this.board = board;
       this.panel = panel;
@@ -44,32 +53,36 @@ public class GameManager {
    }
 
    /**
+    * Calls different methods depending if there is a selected piece. If 
+    * not it selects one. Called from {@link ui.ChessPanel#ChessPanel(Board, int)} 
+    * when it detects player click.
     * 
-    * @param pos
-    * Calls different methods depending if
-    * there is a selected piece. If not it
-    * selects one
+    * @param pos or square that was clicked
     */
    public void handleClick(Position pos) {
-      if(firstMove && aiColor.equals("white")) {
+      if(firstMove && aiColor.equals("white")) { //Triggers ai move so game starts on click
          firstMove = false;
          modelMove();
          return;
       }
       Piece piece = board.pieceThere(pos.row, pos.col);
-      if(selectedPosition == null) {
-         if(piece != null && piece.color.equals(currentTurn)) {
-            System.out.println(currentTurn + "\n");
-            System.out.println(piece.color);
+      if(selectedPosition == null) { //If no piece is selected
+         if(piece != null && piece.color.equals(currentTurn)) { //If correct color was selected, select piece
             selectPiece(pos);
             return;
          }
       }
         
-      moveOrReselect(pos, piece);
+      moveOrReselect(pos, piece); //When selection is not blank
         
    }
 
+   /**
+    * Generates the legal moves for that piece to draw on screen. Saves selected 
+    * position to track whether it exists
+    * 
+    * @param pos that was clicked
+    */
    public void selectPiece(Position pos) {
       ArrayList<Move> moves = board.getLegalMoves(pos);
       selectedPosition = pos;
@@ -78,28 +91,41 @@ public class GameManager {
       panel.repaint();
    }
 
+   /**
+    * Will swap selection if it is valid or process a move if it is
+    * in the legal moves array. If input not valid, it clears the
+    * selected piece
+    * 
+    * @param pos that was clicked 
+    * @param piece possible piece to reselect
+    */
    public void moveOrReselect(Position pos, Piece piece) {
-      Move move = findMoveTo(pos);
+      Move move = findMoveTo(pos); //If move is in legal moves array
 
-      if(move != null) {
+      if(move != null) { //Valid move was selected so process it
          firstMove = false;
          board.makeMove(move);
          endTurn();
          return;
       }
 
-      if(piece != null && piece.color.equals(currentTurn)) {
+      if(piece != null && piece.color.equals(currentTurn)) { //Different valid piece was selected
          selectPiece(pos);
          return;
       }
 
-      clearSelection();
+      clearSelection(); //Invalid input so clear selection
    }
 
+   /**
+    * Called at the end of every turn to clear selection and swap teams.
+    * Will also check for end of game scenarios and properly display result.
+    * 
+    */
    public void endTurn() {
       changeTurn();
       clearSelection();
-      int state = board.checkGameState(currentTurn);
+      int state = board.checkGameState(currentTurn); //0 if game continues, 1 for checkmate, 2 for stalemate
       if(state != 0) {
          if(state == 1) { // Checkmate
             String winner = currentTurn.equals("white") ? "Black wins" : "White wins";
@@ -117,6 +143,10 @@ public class GameManager {
       }
    }
 
+   /**
+    * Gets move from the model through {@link ml.ChessEvaluator#getAIMove(Board, String)}
+    * and ends turn
+    */
    private void modelMove() {
       Move aiMove = model.getAIMove(board, currentTurn);
       board.makeMove(aiMove);
@@ -124,12 +154,23 @@ public class GameManager {
       System.out.println(currentTurn);
    }
 
+   /**
+    * Removes selection and clears the legal moves array and
+    * redraws board
+    */
    public void clearSelection() {
       legalMoves.clear();
       selectedPosition = null;
       panel.repaint();
    }
 
+   /**
+    * Searches through legal move array if the end position is a valid 
+    * destination. Returns that move or null if invalid
+    * 
+    * @param pos end position
+    * @return the move or null
+    */
    public Move findMoveTo(Position pos) {
       for(Move m : legalMoves) {
          if(m.end.equals(pos)) {
@@ -139,6 +180,10 @@ public class GameManager {
       return null;
    }
 
+   /**
+    * Swaps turn from one color to the other
+    * 
+    */
    public void changeTurn() {
       if(currentTurn.equals("white")) {
          this.currentTurn = "black";
@@ -148,6 +193,12 @@ public class GameManager {
       }
    }
 
+   /**
+    * Gets player color whoch is used for swaping sides
+    * in {@link ui.ChessPanel}
+    * 
+    * @return player color
+    */
    public String getPlayerColor() {
       return playerColor;
    }
