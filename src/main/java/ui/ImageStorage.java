@@ -15,6 +15,7 @@ public class ImageStorage {
 
     private static final HashMap<String, Image> images = new HashMap<>();
 
+    //Load all images into memory
     static {
         load("white_pawn");
         load("white_rook");
@@ -31,6 +32,12 @@ public class ImageStorage {
         load("black_king");
     }
 
+    /**
+     * Loads each image once into memory which can be utilized 
+     * any number of times.
+     * 
+     * @param key
+     */
     private static void load(String key) {
         Image img = new ImageIcon(
             ImageStorage.class.getResource("/images/" + key + ".png")
@@ -38,6 +45,13 @@ public class ImageStorage {
         images.put(key, img);
     }
 
+    /**
+     * Gets the image object and is used by
+     * {@link ui.ChessPanel#drawPieces()}
+     * 
+     * @param key
+     * @return image
+     */
     public static Image get(String key) {
         return images.get(key);
     }

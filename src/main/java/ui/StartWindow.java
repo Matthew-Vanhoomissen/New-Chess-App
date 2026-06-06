@@ -85,6 +85,11 @@ public class StartWindow extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Initializes all objects used to operate the game with
+     * the ChessPanel, GameManager, and Board.
+     * 
+     */
     private void launchGame() {
         dispose(); // close start window
 
@@ -106,6 +111,13 @@ public class StartWindow extends JFrame {
 
     }
 
+    /**
+     * Creates a generic button with set size which displays input
+     * text.
+     * 
+     * @param text
+     * @return button object
+     */
     private JButton makeButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Monospaced", Font.BOLD, 14));

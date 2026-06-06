@@ -20,7 +20,7 @@ public class ChessPanel extends JPanel {
 
     private Board board;
     private GameManager manager;
-    private ArrayList<Move> highlightedMoves = new ArrayList<>();
+    private ArrayList<Move> highlightedMoves = new ArrayList<>(); //Legal moves for selected piece
     private final int TILE_SIZE;
     private JButton resetBtn;
 
@@ -51,6 +51,7 @@ public class ChessPanel extends JPanel {
         });
         add(resetBtn);
 
+        //Checks for user input through clicking on coordinates
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -61,11 +62,21 @@ public class ChessPanel extends JPanel {
         });
     }
 
+    /**
+     * Sets the gameManager so they can communicate
+     * 
+     * @param manager
+     */
     public void setManager(GameManager manager) {
         this.manager = manager;
     }
 
-    // Call this from GameManager when checkmate/stalemate detected
+    /**
+     * Called by {@link game.GameManager#endTurn()} when the game is completed.
+     * Generates reset screen to play again and displays end reult
+     * 
+     * @param message result to be displayed
+     */
     public void showGameOver(String message) {
         SwingUtilities.invokeLater(() -> {
             resetBtn.setText(message + " — New Game");
@@ -74,16 +85,33 @@ public class ChessPanel extends JPanel {
         });
     }
 
+    /**
+     * Sets the highlighted moves to the possible legal moves for selected piece
+     * 
+     * @param moves
+     */
     public void setHighlightedMoves(ArrayList<Move> moves) {
         this.highlightedMoves = moves;
         repaint();
     }
 
+    /**
+     * Clears highlighted moves when there is an invalid selection or
+     * switching sides
+     * 
+     */
     public void clearHighlightedMoves() {
         this.highlightedMoves.clear();
         repaint();
     }
 
+    /**
+     * Paints the different layers onto the screen and can generate the end game
+     * screen if necessary
+     * 
+     * @param g graphics object
+     * 
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -98,6 +126,12 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /**
+     * Generates black and white checkerboard pattern as used in chess. Allows
+     * for customizable screen and tile size.
+     * 
+     * @param g
+     */
     private void drawBoard(Graphics g) {
         boolean light = true;
         for (int row = 0; row < 8; row++) {
@@ -110,7 +144,14 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /**
+     * Draws all game pieces on top of the board in their correct positions.
+     * Will flip the board if player is black for better gameplay.
+     * 
+     * @param g
+     */
     private void drawPieces(Graphics g) {
+        //Flip board if player is black
         boolean boardFlipped = manager.getPlayerColor().equals("black");
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -126,7 +167,14 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /**
+     * Draws possible legal moves over the board and under pieces. Correctly 
+     * coordinates with drawing pieces to flip board when player is black.
+     * 
+     * @param g
+     */
     private void drawMoves(Graphics g) {
+        //Flip board if player is black
         boolean boardFlipped = manager.getPlayerColor().equals("black");
         for (Move m : highlightedMoves) {
             g.setColor(Color.GREEN);
@@ -134,6 +182,15 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /**
+     * Converts the x and y pixel coordinates to whole indices that can be used 
+     * in the board 2D array. Correctly coordinates with drawing pieces and moves 
+     * to flip board when player is black.
+     * 
+     * @param x axis
+     * @param y axis
+     * @return new position with correct row and column equivalent
+     */
     private Position pixelConverter(int x, int y) {
         boolean flipped = manager.getPlayerColor().equals("black");
         int row = y / TILE_SIZE;
