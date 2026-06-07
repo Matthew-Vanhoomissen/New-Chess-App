@@ -11,6 +11,16 @@ import game.*;
 import pieces.*;
 
 public class BoardEncoder {
+    /**
+     * Converts the board object into a binary float array that can be
+     * the input layer of a neural network. There are a total of 12 planes
+     * of 64, one for each piece type and color (white pawn, black bishop, etc).
+     * Each value represents if that piece type is there or not. Additional 
+     * inputs represent castling and en passant ability. 
+     * 
+     * @param board
+     * @return float array of inputs
+     */
     public static float[] convertBoard(Board board) {
         float[] input = new float[781];
         //Input all colored piece positions
@@ -32,7 +42,7 @@ public class BoardEncoder {
         input[base + 3] = board.kingSideCastle("black")  ? 1.0f : 0.0f;
         input[base + 4] = board.queenSideCastle("black") ? 1.0f : 0.0f;
 
-        // En passant file (one-hot, indices 773-780)
+        // En passant file (max of one, indices 773-780)
         Move lastMove = board.prevMove;
         if (lastMove != null && lastMove.piece instanceof Pawn) {
             int movedTwo = Math.abs(lastMove.end.row - lastMove.start.row);
@@ -45,6 +55,13 @@ public class BoardEncoder {
 
     }
 
+    /**
+     * Generates the plane index from 0 -> 11 for each piece type
+     * and color for quick lookup.
+     * 
+     * @param piece
+     * @return plane index
+     */
     private static int getPlaneIndex(Piece piece) {
         int colorOffset = piece.color.equals("white") ? 0 : 6;
         if (piece instanceof Pawn)   return colorOffset + 0;
