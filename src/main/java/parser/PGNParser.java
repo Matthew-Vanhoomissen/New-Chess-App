@@ -19,12 +19,26 @@ import java.util.*;
 
 public class PGNParser {
 
+    /**
+     * Loads and parses chess file format PGN which contains player information and more
+     * importantly the moves in order of a chess game. 
+     * 
+     * This method obtains the program compatible moves through the ChessLib PgnHolder 
+     * and Game class methods. It saves each board state and assigns the label or result 
+     * to which ever side won that game (white = 1, black = -1, stalemate = 0). These samples
+     * are then used to train and test the model via {@link ml.ModelTrainer#train(List)}
+     * 
+     * @param pgnPath pgn file
+     * @return sample ArrayList
+     * @throws Exception error reading game
+     */
     public static List<TrainingDataGen.Sample> parsePGN(String pgnPath) throws Exception {
         List<TrainingDataGen.Sample> samples = new ArrayList<>();
 
         PgnHolder pgn = new PgnHolder(pgnPath);
-        pgn.loadPgn();
+        pgn.loadPgn(); //Convert
 
+        //Iterate through each game to populate the ArrayList
         for (Game game : pgn.getGames()) {
             try {
                 game.loadMoveText();
@@ -32,9 +46,9 @@ public class PGNParser {
                 String result  = game.getResult().getDescription();
 
                 float label;
-                if (result.equals("1-0"))       label = 1.0f;
-                else if (result.equals("0-1"))  label = -1.0f;
-                else                            label = 0.0f;
+                if (result.equals("1-0"))       label = 1.0f;  //White wins
+                else if (result.equals("0-1"))  label = -1.0f; //Black wins
+                else                            label = 0.0f;            //Stalemate
 
                 List<TrainingDataGen.Sample> gameSamples = processGame(moves, label);
                 samples.addAll(gameSamples);
@@ -48,7 +62,16 @@ public class PGNParser {
         return samples;
     }
 
-        private static List<TrainingDataGen.Sample> processGame(MoveList moves, float label) {
+    /**
+     * Iterates through each move and converts to program compatible move. If successful,
+     * it creates a sample with board state and input label. Finally makes move on board
+     * to progress game as in move list.
+     * 
+     * @param moves in game
+     * @param label result of the game (already parsed)
+     * @return samples from this specific game
+     */
+    private static List<TrainingDataGen.Sample> processGame(MoveList moves, float label) {
         List<TrainingDataGen.Sample> samples = new ArrayList<>();
         Board board = new Board();
         board.createBoard();
@@ -58,10 +81,9 @@ public class PGNParser {
             samples.add(new TrainingDataGen.Sample(
                 BoardEncoder.convertBoard(board), label));
 
-            // Translate ChessLib move to your Move
+            // Translate ChessLib move to program move
             Move move = translateMove(board, chessMove);
             if (move == null) {
-                System.out.println("Issue");
                 break; // couldn't translate, skip rest of game
             }
             board.makeMove(move);
@@ -69,17 +91,25 @@ public class PGNParser {
         return samples;
     }
 
+    /**
+     * Converts move from ChessLib into program move {@link game.Move}. Accounts
+     * for special move types and positional information.
+     * 
+     * @param board current state
+     * @param chessMove ChessLib move
+     * @return program move
+     */
     private static Move translateMove(Board board, com.github.bhlangonijr.chesslib.move.Move chessMove) {
-        String from = chessMove.getFrom().value();
+        String from = chessMove.getFrom().value(); // Chess notation like e2 a5 etc
         String to   = chessMove.getTo().value();
 
-        Position fromPos = algebraicToPosition(from);
+        Position fromPos = algebraicToPosition(from); //Convert to program position with rows and columns
         Position toPos   = algebraicToPosition(to);
         System.out.println(from + " translated to " + fromPos);
         System.out.println(to + " translated to " + toPos);
 
 
-        Piece piece = board.pieceThere(fromPos.row, fromPos.col);
+        Piece piece = board.pieceThere(fromPos.row, fromPos.col); //Moved piece
         if (piece == null) return null;
 
         // Castling — king moves two squares

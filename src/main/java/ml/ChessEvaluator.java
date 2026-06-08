@@ -373,7 +373,7 @@ public class ChessEvaluator {
      * @param board
      * @return ordered array of moves
      */
-    private List<Move> orderMoves(ArrayList<Move> moves, Board board) {
+    public List<Move> orderMoves(ArrayList<Move> moves, Board board) {
         List<Move> copy = new ArrayList<>(moves);
         TTEntry cached = transpositionTable.get(board.getZobristHash());
         Move ttBestMove = (cached != null) ? cached.bestMove : null;
