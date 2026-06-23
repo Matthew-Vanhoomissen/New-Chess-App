@@ -102,7 +102,7 @@ public class ModelTrainer {
         INDArray valInput = Nd4j.create(valInputs);
         INDArray valLabel = Nd4j.create(valLabels);
 
-        //Create modek
+        //Create model
         MultiLayerNetwork model = buildModel();
         double bestValLoss = Double.MAX_VALUE;
         int epochsWithoutImprovement = 0;
@@ -112,7 +112,7 @@ public class ModelTrainer {
         List<Integer> indices = new ArrayList<>();
         for (int i = 0; i < n; i++) indices.add(i);
 
-        for (int epoch = 0; epoch < 30; epoch++) {
+        for (int epoch = 0; epoch < 10; epoch++) {
             // Shuffle sample order each epoch to prevent the model from overfitting
             // to positional patterns in the data (e.g. always seeing openings first).
             Collections.shuffle(indices);
@@ -162,7 +162,7 @@ public class ModelTrainer {
                 // are preserved even if later epochs overfit and are stopped early.
                 bestValLoss = valLoss;
                 epochsWithoutImprovement = 0;
-                ModelSerializer.writeModel(model, "best_model.zip", true);
+                ModelSerializer.writeModel(model, "new_model.zip", true);
                 System.out.println("New best saved");
             } else if (++epochsWithoutImprovement >= 5) {
                 // Validation loss has not improved for 5 consecutive epochs —

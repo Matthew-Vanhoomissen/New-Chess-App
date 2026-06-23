@@ -43,9 +43,9 @@ public class GameManager {
       this.playerColor = playerColor;
       this.aiColor = (playerColor.equals("white") ? "black" : "white");
       try {
-         model = ChessEvaluator.loadForRuntime("best_model.bin");
-         //model = ChessEvaluator.load("best_model.zip");
-         //model.exportWeights("best_model.bin");
+         model = ChessEvaluator.loadForRuntime("new_model.bin");
+         //model = ChessEvaluator.load("new_model.zip");
+         //model.exportWeights("new_model.bin");
       }
       catch(IOException e) {
          System.out.println(e.getMessage());

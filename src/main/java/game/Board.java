@@ -549,4 +549,70 @@ public class Board {
         return null;
     }
 
+    public String toFEN() {
+        StringBuilder fen = new StringBuilder();
+
+        // Piece positions
+        for (int row = 0; row < 8; row++) {
+            int empty = 0;
+            for (int col = 0; col < 8; col++) {
+                Piece p = pieceThere(row, col);
+                if (p == null) {
+                    empty++;
+                } else {
+                    if (empty > 0) { fen.append(empty); empty = 0; }
+                    fen.append(pieceToFEN(p));
+                }
+            }
+            if (empty > 0) fen.append(empty);
+            if (row < 7) fen.append('/');
+        }
+
+        // Side to move
+        fen.append(' ').append(getCurrentTurn().equals("white") ? 'w' : 'b');
+
+        // Castling rights
+        StringBuilder castling = new StringBuilder();
+        if (kingSideCastle("white"))  castling.append('K');
+        if (queenSideCastle("white")) castling.append('Q');
+        if (kingSideCastle("black"))  castling.append('k');
+        if (queenSideCastle("black")) castling.append('q');
+        fen.append(' ').append(castling.length() > 0 ? castling : "-");
+
+        // En passant
+        Move last = prevMove;
+        if (last != null && last.piece instanceof Pawn
+                && Math.abs(last.end.row - last.start.row) == 2) {
+            int epRow = (last.end.row + last.start.row) / 2;
+            char epCol = (char)('a' + last.end.col);
+            int epRank = 8 - epRow;
+            fen.append(' ').append(epCol).append(epRank);
+        } else {
+            fen.append(" -");
+        }
+
+        // Halfmove clock and fullmove number (simplified)
+        fen.append(" 0 1");
+
+        return fen.toString();
+    }
+
+    private char pieceToFEN(Piece p) {
+        char c;
+        if (p instanceof Pawn)   c = 'p';
+        else if (p instanceof Knight) c = 'n';
+        else if (p instanceof Bishop) c = 'b';
+        else if (p instanceof Rook)   c = 'r';
+        else if (p instanceof Queen)  c = 'q';
+        else                          c = 'k';
+        return p.color.equals("white") ? Character.toUpperCase(c) : c;
+    }
+
+    public String getCurrentTurn() {
+        if(prevMove != null) {
+            return prevMove.piece.color.equals("white") ? "black" : "white";
+        }
+        return "white";
+    }
+
 }

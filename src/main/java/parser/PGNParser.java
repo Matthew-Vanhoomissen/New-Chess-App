@@ -33,6 +33,8 @@ public class PGNParser {
      * @throws Exception error reading game
      */
     public static List<TrainingDataGen.Sample> parsePGN(String pgnPath) throws Exception {
+        int games = 0;
+        StockfishEvaluator sf = new StockfishEvaluator("stockfish.exe");
         List<TrainingDataGen.Sample> samples = new ArrayList<>();
 
         PgnHolder pgn = new PgnHolder(pgnPath);
@@ -41,17 +43,22 @@ public class PGNParser {
         //Iterate through each game to populate the ArrayList
         for (Game game : pgn.getGames()) {
             try {
+                games++;
                 game.loadMoveText();
                 MoveList moves = game.getHalfMoves();
-                String result  = game.getResult().getDescription();
 
-                float label;
-                if (result.equals("1-0"))       label = 1.0f;  //White wins
-                else if (result.equals("0-1"))  label = -1.0f; //Black wins
-                else                            label = 0.0f;            //Stalemate
+                //TODO instead of iterating through each game, just iterate through each move so this can work
 
-                List<TrainingDataGen.Sample> gameSamples = processGame(moves, label);
+                List<TrainingDataGen.Sample> gameSamples = processGame(moves, sf);
                 samples.addAll(gameSamples);
+                if(games % 100 == 0) {
+                    System.out.println("Games generated: " + games);
+                    System.out.println("Samples: " + samples.size());
+                    if(games == 100000) {
+                        return samples;
+                    }
+                }
+                
             } catch (Exception e) {
                 // Skip malformed games
                 System.out.println("Issue");
@@ -71,22 +78,28 @@ public class PGNParser {
      * @param label result of the game (already parsed)
      * @return samples from this specific game
      */
-    private static List<TrainingDataGen.Sample> processGame(MoveList moves, float label) {
+    private static List<TrainingDataGen.Sample> processGame(MoveList moves, StockfishEvaluator sf) {
         List<TrainingDataGen.Sample> samples = new ArrayList<>();
         Board board = new Board();
         board.createBoard();
 
         for (com.github.bhlangonijr.chesslib.move.Move chessMove : moves) {
-            // Record position before move
-            samples.add(new TrainingDataGen.Sample(
-                BoardEncoder.convertBoard(board), label));
+            try {
+                // Record position before move
+                float label = sf.evaluate(board.toFEN(), 6);
+                samples.add(new TrainingDataGen.Sample(
+                    BoardEncoder.convertBoard(board), label));
 
-            // Translate ChessLib move to program move
-            Move move = translateMove(board, chessMove);
-            if (move == null) {
-                break; // couldn't translate, skip rest of game
+                // Translate ChessLib move to program move
+                Move move = translateMove(board, chessMove);
+                if (move == null) {
+                    break; // couldn't translate, skip rest of game
+                }
+                board.makeMove(move);
             }
-            board.makeMove(move);
+            catch(Exception e){
+                break;
+            }
         }
         return samples;
     }
@@ -105,8 +118,7 @@ public class PGNParser {
 
         Position fromPos = algebraicToPosition(from); //Convert to program position with rows and columns
         Position toPos   = algebraicToPosition(to);
-        System.out.println(from + " translated to " + fromPos);
-        System.out.println(to + " translated to " + toPos);
+
 
 
         Piece piece = board.pieceThere(fromPos.row, fromPos.col); //Moved piece

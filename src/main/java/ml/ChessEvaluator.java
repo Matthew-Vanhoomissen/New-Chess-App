@@ -208,7 +208,7 @@ public class ChessEvaluator {
         // Leaf node evaluation
         if (depth == 0) {
             //float score = nnEvaluator.evaluate(currentState);
-            float score = hybridEvaluate(currentState);
+            float score = nnEvaluator.evaluate(currentState);
             transpositionTable.put(hash, new TTEntry(score, 0, TTEntry.EXACT, null));
             return score;
         }
@@ -389,49 +389,4 @@ public class ChessEvaluator {
         });
         return copy;
     }
-
-    /**
-     * Evaluates board through the neural network and on material score.
-     * Chooses material score if close to equal position and there is 
-     * significant material change. This is necessary due to inaccuracies 
-     * in the neural network evaluation.
-     * 
-     * @param currentState of the board
-     * @return float value of position
-     */
-    private float hybridEvaluate(Board currentState) {
-        float nnScore = nnEvaluator.evaluate(currentState);
-
-        // If NN thinks position is roughly equal, verify with material
-        if (Math.abs(nnScore) < 0.15f) {
-            float materialScore = getMaterialScore(currentState);
-
-            // If material is significantly imbalanced despite NN saying equal,
-            // blend toward the material score
-            if (Math.abs(materialScore) > 0.05f) {
-                return 0.5f * nnScore + 0.5f * materialScore;
-            }
-        }
-        return nnScore;
-    }
-
-    /**
-     * Adds up material values of each team and returns the difference
-     * 
-     * @param board
-     * @return team difference value
-     */
-    private float getMaterialScore(Board board) {
-        float score = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Piece p = board.pieceThere(i, j);
-                if (p == null) continue;
-                float val = pieceValue(p);
-                score += p.color.equals("white") ? val : -val;
-            }
-        }
-        return Math.max(-1.0f, Math.min(1.0f, score / 39.0f));
-    }
-    
 }
