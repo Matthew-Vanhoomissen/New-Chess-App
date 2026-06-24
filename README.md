@@ -18,7 +18,6 @@ A Java chess application featuring a fully functional chess engine paired with a
 - **Iterative deepening** with a configurable time limit — searches progressively deeper and always returns the best move found within the time budget
 - **Transposition table** using Zobrist hashing to cache previously evaluated positions and avoid redundant search
 - **MVV-LVA move ordering** (Most Valuable Victim, Least Valuable Attacker) to improve pruning efficiency by searching promising captures first
-- **Hybrid evaluation** blending neural network output with a material score fallback to catch hanging pieces the network misses
 
 ### Neural Network Evaluator
 - Trained on grandmaster games parsed from PGN format
@@ -34,28 +33,29 @@ A Java chess application featuring a fully functional chess engine paired with a
 ```
 src/
 ├── game/
-│   ├── Board.java          — board state, make/undo move, Zobrist hash
-│   ├── GameManager.java    — turn management, player input, AI triggering
-│   ├── Move.java           — move representation (standard, castle, en passant, promotion)
-│   └── Position.java       — row/col coordinate wrapper
+│   ├── Board.java              — board state, make/undo move, Zobrist hash
+│   ├── GameManager.java        — turn management, player input, AI triggering
+│   ├── Move.java               — move representation (standard, castle, en passant, promotion)
+│   └── Position.java           — row/col coordinate wrapper
 ├── pieces/
-│   ├── Piece.java          — abstract base class
+│   ├── Piece.java          —   abstract base class
 │   └── [Pawn, Knight, Bishop, Rook, Queen, King].java
 ├── ml/
-│   ├── BoardEncoder.java   — converts board state to 781-element float array
-│   ├── ChessEvaluator.java — minimax search, alpha-beta, transposition table
-│   ├── NNEvaluator.java    — lightweight runtime forward pass
-│   ├── ModelTrainer.java   — DL4J training pipeline
-│   └── TrainingDataGen.java — self-play sample generation
+│   ├── BoardEncoder.java       — converts board state to 781-element float array
+│   ├── ChessEvaluator.java     — minimax search, alpha-beta, transposition table
+│   ├── NNEvaluator.java        — lightweight runtime forward pass
+│   ├── ModelTrainer.java       — DL4J training pipeline
+    ├── StockfishEvaluator.java —
+│   └── TrainingDataGen.java    — self-play sample generation
 ├── parser/
-│   └── PGNParser.java      — parses PGN game files into training samples
+│   └── PGNParser.java          — parses PGN game files into training samples
 ├── transposition/
-│   ├── TTEntry.java        — transposition table entry (score, depth, flag, best move)
-│   └── ZobristHash.java    — Zobrist key generation and management
+│   ├── TTEntry.java            — transposition table entry (score, depth, flag, best move)
+│   └── ZobristHash.java        — Zobrist key generation and management
 └── ui/
-    ├── ChessPanel.java     — Swing board rendering and mouse input
-    ├── StartWindow.java    — game configuration screen
-    └── ImageStorage.java   — piece image caching
+    ├── ChessPanel.java         — Swing board rendering and mouse input
+    ├── StartWindow.java        — game configuration screen
+    └── ImageStorage.java       — piece image caching
 ```
 
 ---
@@ -70,7 +70,8 @@ The AI uses **minimax search with alpha-beta pruning** to explore a tree of poss
 
 ## Training
 
-The neural network was trained on a dataset of grandmaster PGN games using DL4J. Positions were encoded as 781-element binary feature vectors and labeled using a blend of material score and game outcome. Training used the Adam optimizer with early stopping based on validation loss.
+The neural network was trained on a dataset of grandmaster PGN games using DL4J. Positions were encoded as 781-element binary feature vectors and labeled using the Stockfish position evaltuator which describes if white
+or black has the advantage. Training used the Adam optimizer with early stopping based on validation loss.
 
 For runtime performance, the trained weights are exported to a binary file and evaluated using a hand-written forward pass (matrix multiply + ReLU + tanh), removing all DL4J dependency from the game loop. A single evaluation takes roughly 0.01ms, making depth 4–5 search practical within a 3–5 second time budget.
 
@@ -89,7 +90,7 @@ It will not:
 - Play strong endgames
 - Match even a casual club player
 
-Strength can be improved by increasing search depth, using a larger network trained on more data, or replacing the neural network with a Stockfish-labeled training set.
+Strength can be improved by increasing search depth or using a larger network trained on more data.
 
 ---
 

@@ -47,8 +47,6 @@ public class PGNParser {
                 game.loadMoveText();
                 MoveList moves = game.getHalfMoves();
 
-                //TODO instead of iterating through each game, just iterate through each move so this can work
-
                 List<TrainingDataGen.Sample> gameSamples = processGame(moves, sf);
                 samples.addAll(gameSamples);
                 if(games % 100 == 0) {
